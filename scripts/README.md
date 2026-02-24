@@ -1,104 +1,41 @@
-# DevOps Portfolio
+# DevOps
 
-A comprehensive collection of DevOps projects, labs, and infrastructure-as-code examples. Each project is organized as a separate branch for clean navigation and focused development.
+A collection of Bash automation scripts and reference documentation for system administration and DevOps tasks.
 
-## Repository Structure
+## Scripts
 
-This repository uses a **branch-based organization** instead of subdirectories. Each branch contains a complete, self-contained project.
-
-## Projects
-
-### Foundations
-
-| Branch | Description |
+| Script | Description |
 |--------|-------------|
-| [`linux-lab-notebook`](../../tree/linux-lab-notebook) | Linux administration notes, commands, and lab exercises |
-| [`devops-runbooks`](../../tree/devops-runbooks) | Operational runbooks and troubleshooting guides |
-| [`automation-scripts`](../../tree/automation-scripts) | Shell scripts and automation utilities |
+| [system-health-check.sh](Bash/system-health-check.sh) | Monitors CPU, memory, and disk usage with configurable thresholds, color output, and logging |
+| [calculator.sh](Bash/calculator.sh) | Prompts for two numbers and performs addition, subtraction, multiplication, and division |
+| [fileOperations.sh](Bash/fileOperations.sh) | Creates a directory and writes a timestamped message to a file |
+| [fileChecker.sh](Bash/fileChecker.sh) | Checks if a file exists and reports its read, write, and execute permissions |
+| [backupTextFiles.sh](Bash/backupTextFiles.sh) | Copies all .txt files from a source directory into a timestamped backup directory |
+| [systemMonitor.sh](Bash/systemMonitor.sh) | Displays a system report covering CPU, memory, disk usage, and top processes, saved to a log file |
 
-### Cloud & Serverless
-
-| Branch | Description |
-|--------|-------------|
-| [`aws-web-server`](../../tree/aws-web-server) | AWS EC2 web server deployment and configuration |
-| [`serverless-url-shortener`](../../tree/serverless-url-shortener) | Serverless URL shortener using AWS Lambda, API Gateway, and DynamoDB |
-
-### Containerization
-
-| Branch | Description |
-|--------|-------------|
-| [`docker-lab`](../../tree/docker-lab) | Docker fundamentals, Dockerfiles, and compose examples |
-| [`aws-container-deployment`](../../tree/aws-container-deployment) | Deploying containers on AWS (ECS/Fargate) |
-
-### Infrastructure as Code
-
-| Branch | Description |
-|--------|-------------|
-| [`terraform-aws-infrastructure`](../../tree/terraform-aws-infrastructure) | Terraform modules for AWS infrastructure provisioning |
-| [`ci-cd-pipeline`](../../tree/ci-cd-pipeline) | CI/CD pipeline configurations (GitHub Actions, Jenkins) |
-
-### Kubernetes
-
-| Branch | Description |
-|--------|-------------|
-| [`kubernetes-local-lab`](../../tree/kubernetes-local-lab) | Local Kubernetes setup with minikube/kind and learning exercises |
-| [`eks-production-cluster`](../../tree/eks-production-cluster) | Production-grade EKS cluster configuration |
-
-### Observability
-
-| Branch | Description |
-|--------|-------------|
-| [`monitoring-stack`](../../tree/monitoring-stack) | Prometheus, Grafana, and alerting configurations |
-
-### Capstone
-
-| Branch | Description |
-|--------|-------------|
-| [`capstone-project`](../../tree/capstone-project) | End-to-end DevOps project combining all skills |
-
-## Getting Started
-
-To explore a specific project, switch to its branch:
+### Quick Start
 
 ```bash
-# Clone the repository
-git clone https://github.com/ei-sei/DevOps.git
-cd DevOps
+# Make all scripts executable
+chmod +x Bash/*.sh
 
-# List all available branches
-git branch -a
+# Run the system monitor
+./Bash/systemMonitor.sh
 
-# Switch to a project branch
-git checkout <branch-name>
+# Run the calculator
+./Bash/calculator.sh
+
+# Check file permissions
+./Bash/fileChecker.sh
+
+# Backup text files
+./Bash/backupTextFiles.sh
+
+# Run a health check with default thresholds
+./Bash/system-health-check.sh
 ```
 
-## Branch Workflow
+## Documentation
 
-```
-main (this README)
- ├── linux-lab-notebook
- ├── devops-runbooks
- ├── automation-scripts
- ├── aws-web-server
- ├── serverless-url-shortener
- ├── docker-lab
- ├── aws-container-deployment
- ├── terraform-aws-infrastructure
- ├── ci-cd-pipeline
- ├── kubernetes-local-lab
- ├── eks-production-cluster
- ├── monitoring-stack
- └── capstone-project
-```
-
-## Technologies
-
-- **Cloud:** AWS (EC2, Lambda, ECS, EKS, S3, DynamoDB)
-- **Containers:** Docker, Kubernetes
-- **IaC:** Terraform, CloudFormation
-- **CI/CD:** GitHub Actions, Jenkins
-- **Monitoring:** Prometheus, Grafana
-- **Scripting:** Bash, Python
-
-## License
-
+- [Bash Scripting Fundamentals](docs/Index.md) — A practical guide covering Bash from basics to real-world patterns
+- [Production-Quality Script Standards](docs/Production-Quality-Script-Standards.md) — Guidelines for writing scripts ready for real use
