@@ -9,16 +9,9 @@
 # OS files
 .DS_Store
 
-# Terraform
-*.tfstate
-*.tfstate.*
-.terraform/
-*.tfvars
-
 # Secrets
 .env
 *.pem
 *.key
+*.private
 
-# Logs
-*.log

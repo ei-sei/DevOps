@@ -1,104 +1,37 @@
-# DevOps Portfolio
+# Linux Lab Notebook
+Documentation of my Linux command-line journey.
 
-A comprehensive collection of DevOps projects, labs, and infrastructure-as-code examples. Each project is organized as a separate branch for clean navigation and focused development.
+## Environment
+
+- **Local:** Fedora 43 (KDE Plasma)
+- **Cloud practice:** Ubuntu 22.04 on AWS EC2
+
+## Skills Demonstrated
+
+### System Administration
+- User and group management
+- File permissions and ownership
+- Process management
+- Package management (dnf and apt)
+
+### Troubleshooting
+- Log analysis with grep, awk
+- System resource monitoring
+- Network diagnostics
+
+### Wargames
+- [OverTheWire Bandit](https://overthewire.org/wargames/bandit/)
+
+### Cross-Distribution Experience
+- Fedora/RHEL (dnf, firewalld, SELinux)
+- Ubuntu/Debian (apt, ufw)
 
 ## Repository Structure
 
-This repository uses a **branch-based organization** instead of subdirectories. Each branch contains a complete, self-contained project.
-
-## Projects
-
-### Foundations
-
-| Branch | Description |
-|--------|-------------|
-| [`linux-lab-notebook`](../../tree/linux-lab-notebook) | Linux administration notes, commands, and lab exercises |
-| [`devops-runbooks`](../../tree/devops-runbooks) | Operational runbooks and troubleshooting guides |
-| [`automation-scripts`](../../tree/automation-scripts) | Shell scripts and automation utilities |
-
-### Cloud & Serverless
-
-| Branch | Description |
-|--------|-------------|
-| [`aws-web-server`](../../tree/aws-web-server) | AWS EC2 web server deployment and configuration |
-| [`serverless-url-shortener`](../../tree/serverless-url-shortener) | Serverless URL shortener using AWS Lambda, API Gateway, and DynamoDB |
-
-### Containerization
-
-| Branch | Description |
-|--------|-------------|
-| [`docker-lab`](../../tree/docker-lab) | Docker fundamentals, Dockerfiles, and compose examples |
-| [`aws-container-deployment`](../../tree/aws-container-deployment) | Deploying containers on AWS (ECS/Fargate) |
-
-### Infrastructure as Code
-
-| Branch | Description |
-|--------|-------------|
-| [`terraform-aws-infrastructure`](../../tree/terraform-aws-infrastructure) | Terraform modules for AWS infrastructure provisioning |
-| [`ci-cd-pipeline`](../../tree/ci-cd-pipeline) | CI/CD pipeline configurations (GitHub Actions, Jenkins) |
-
-### Kubernetes
-
-| Branch | Description |
-|--------|-------------|
-| [`kubernetes-local-lab`](../../tree/kubernetes-local-lab) | Local Kubernetes setup with minikube/kind and learning exercises |
-| [`eks-production-cluster`](../../tree/eks-production-cluster) | Production-grade EKS cluster configuration |
-
-### Observability
-
-| Branch | Description |
-|--------|-------------|
-| [`monitoring-stack`](../../tree/monitoring-stack) | Prometheus, Grafana, and alerting configurations |
-
-### Capstone
-
-| Branch | Description |
-|--------|-------------|
-| [`capstone-project`](../../tree/capstone-project) | End-to-end DevOps project combining all skills |
-
-## Getting Started
-
-To explore a specific project, switch to its branch:
-
-```bash
-# Clone the repository
-git clone https://github.com/ei-sei/DevOps.git
-cd DevOps
-
-# List all available branches
-git branch -a
-
-# Switch to a project branch
-git checkout <branch-name>
 ```
-
-## Branch Workflow
+linux-lab-notebook/
+├── challenges/ 
+├── capstones/     
+└── OverTheWire/   
 
 ```
-main (this README)
- ├── linux-lab-notebook
- ├── devops-runbooks
- ├── automation-scripts
- ├── aws-web-server
- ├── serverless-url-shortener
- ├── docker-lab
- ├── aws-container-deployment
- ├── terraform-aws-infrastructure
- ├── ci-cd-pipeline
- ├── kubernetes-local-lab
- ├── eks-production-cluster
- ├── monitoring-stack
- └── capstone-project
-```
-
-## Technologies
-
-- **Cloud:** AWS (EC2, Lambda, ECS, EKS, S3, DynamoDB)
-- **Containers:** Docker, Kubernetes
-- **IaC:** Terraform, CloudFormation
-- **CI/CD:** GitHub Actions, Jenkins
-- **Monitoring:** Prometheus, Grafana
-- **Scripting:** Bash, Python
-
-## License
-
