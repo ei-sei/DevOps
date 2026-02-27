@@ -1,4 +1,4 @@
-# DevOps Lab Notebook
+# Networking Lab Notebook
 
 Documentation of my DevOps learning journey, covering networking fundamentals and hands-on practice.
 
