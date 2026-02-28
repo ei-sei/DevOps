@@ -1,0 +1,21 @@
+# Local settings
+*.local
+
+# Editor directories
+.vscode/
+.idea/
+*.sw?
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+*.tfvars
+
+# Secrets
+.env
+*.pem
+*.key
+
+# Logs
+*.log
