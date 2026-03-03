@@ -77,14 +77,14 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5002)
 ```
 
-**Create the `requirements.txt`**
+**Create the `requirements.txt`:**
 ```
 Flask==3.0.0
 redis==5.0.1
 ```
 > We could just list out the dependencies as `RUN pip install flask redis` but using requirements.txt is just much more conventional for readability, portability, layer caching and tooling.
 
-**Create the `Dockerfile`**
+**Create the `Dockerfile`:**
 ```dockerfile
 # Build Flask image
 FROM python:3.11-slim
@@ -111,7 +111,7 @@ CMD ["python", "app.py"]
 ---
 
 ## Part 2 - Docker Compose configuration
-Create the `docker-compose.yml` (inside project root)
+Create the `docker-compose.yml` (inside project root):
 ```yaml
 version: '3.9'
 
@@ -168,13 +168,14 @@ You should now be able to visit `http://localhost:5002` and verify the API is ru
 - `docker compose down` - Stop and remove containers
 - `docker compose down --rmi all` - Remove everything (container, images)
 
+At this point you have a working multi-container application where Flask and Redis run as separate services, communicate over a shared Docker network, and are orchestrated by Docker Compose. Flask handles HTTP requests and delegates all data storage to Redis, which means the two services are loosely coupled - you could swap either one out without touching the other. This separation of concerns is a core principle of containerised application design.
 
 ---
 
-# Section 2 - Persistent storage
+## Section 2 - Persistent storage
 This section will look to add persistent storage to Redis so data survives container restarts.
 
-**PROBLEM WE'RE SOLVING**
+### PROBLEM WE'RE SOLVING
 
 ```
 CURRENT (Without Persistence):
@@ -251,9 +252,11 @@ docker compose up -d
 
 Visit `/count` again - the counter should continue from where it left off, not reset to 1.
 
+By mounting a named volume and enabling AOF persistence, Redis now writes every change to disk instead of keeping data only in memory. This means the counter survives container restarts and even full `docker compose down` cycles. The volume is managed by Docker and lives outside the container, so it persists independently of the container's lifecycle - this is the correct way to handle stateful data in a containerised environment.
+
 ---
 
-# Section 3 - Environment variables
+## Section 3 - Environment variables
 This section will configure Flask to read Redis connection from environment variables instead of hardcoding them.
 
 ### PROBLEM WE'RE SOLVING
@@ -395,9 +398,173 @@ networks:
 
 ```
 
-**TEST IF IT IS ALL WORKING**
+### Test
 `docker compose up --build`
 
 Environment variables are a good way to add flexibility to your application, you will be able to control all values through the .env rather than scanning through your code and hard-coding it. This is especially useful once you start introducing secrets such as API keys. Just make sure to add the .env file to .gitignore so that you don't accidentally push it for the whole world to see.
 
+---
 
+## Section 4 - Scaling the Application
+Run multiple Flask instances with nginx load balancing.
+
+### PROBLEM WE'RE SOLVING
+```
+SINGLE FLASK INSTANCE (Current):
+
+User 1 → Flask :5002 ✓
+User 2 → Flask :5002 (waiting...) ✗
+User 3 → Flask :5002 (slow...) ✗
+
+Issue: Single Flask container handles one request at a time
+       Bottleneck when many users visit simultaneously
+
+MULTIPLE INSTANCES WITH LOAD BALANCING:
+
+User 1 → nginx :80 → Flask 1 :5002 ✓
+User 2 → nginx :80 → Flask 2 :5002 ✓
+User 3 → nginx :80 → Flask 3 :5002 ✓
+
+Solution: Multiple Flask containers
+          nginx distributes requests (round-robin)
+          All share same Redis (consistent data)
+```
+
+### HOW LOAD BALANCING WORKS
+```
+┌────────────────────────────────────────────────┐
+│       Docker Compose Network                   │
+│                                                │
+│  Outside (host)                                │
+│       │                                        │
+│       ▼                                        │
+│   ┌─────────┐                                  │
+│   │ nginx   │ (Load Balancer)                  │
+│   │ :80     │ ← Single entry point             │
+│   └────┬────┘                                  │
+│        │ Round-robin distribution              │
+│        ├──► Flask 1 :5002 (internal)           │
+│        ├──► Flask 2 :5002 (internal)           │
+│        └──► Flask 3 :5002 (internal)           │
+│                                                │
+│   All Flask instances:                         │
+│   - Same code/image                            │
+│   - Same Redis backend                         │
+│   - No port conflicts (internal :5002)         │
+│   - Transparent to user                        │
+│                                                │
+│   Redis (shared):                              │
+│   └──► :6379                                   │
+│                                                │
+└────────────────────────────────────────────────┘
+```
+
+### Create a new file `nginx.conf` in project root:
+
+
+```nginx
+events {
+    worker_connections 1024;
+}
+
+http {
+    # Define upstream servers (Flask instances)
+    upstream flask_app {
+        # Docker Compose resolves 'web' to all Flask containers
+        server web:5002;
+    }
+
+    # HTTP server
+    server {
+        listen 80;
+        server_name _;
+
+        # Route all requests to Flask
+        location / {
+            proxy_pass http://flask_app;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+    }
+}
+```
+
+**What this does:**
+- `upstream flask_app` - Defines which servers to load balance to
+- `server web:5002` - Docker resolves 'web' to all web service containers
+- `listen 80` - nginx listens on port 80
+- `proxy_pass http://flask_app` - Forward requests to Flask instances
+- `proxy_set_header` - Pass request info to Flask
+
+
+### Update Docker Compose
+
+```yaml
+version: '3.9'
+
+services:
+  # Flask Web Application
+  web:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    # container_name: flask-app    # ← REMOVE THIS (conflicts when scaling)
+    # ports:                        # ← REMOVE THIS (no direct host access)
+    #   - "5002:5002"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
+  # NEW: nginx Load Balancer
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-lb
+    ports:
+      - "80:80"                     # ← Single entry point
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web
+    networks:
+      - app-network
+
+  # Redis Database
+  redis:
+    image: redis:7-alpine
+    container_name: redis-db
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - app-network
+    command: redis-server --appendonly yes
+
+volumes:
+  redis-data:
+
+networks:
+  app-network:
+    driver: bridge
+```
+
+
+**Key changes:**
+
+| Change | Reason |
+|--------|--------|
+| Remove `container_name: flask-app` from web | Multiple containers need unique names (auto-generated) |
+| Remove `ports: "5002:5002"` from web | Flask not exposed to host, only nginx |
+| Add `nginx` service | Load balancer entry point |
+| Add `volumes: ./nginx.conf` to nginx | Mount our load balancer config |
+
+
+### Test
+`docker compose up --build`
+`http://localhost/`
+
+By adding nginx as a load balancer, all traffic now flows through a single entry point on port 80 rather than directly to Flask. This means Flask is no longer exposed to the outside world - only nginx is. The key benefit is that you can now run multiple Flask instances with `docker compose up --scale web=3` and nginx will automatically distribute requests across all of them using round-robin. Because all Flask instances share the same Redis backend, the counter data stays consistent regardless of which instance handles the request - this demonstrates the principle of keeping your application layer stateless and your data layer separate.
