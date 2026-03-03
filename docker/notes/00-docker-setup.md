@@ -1,4 +1,4 @@
-The following instructions show how to install docker on Fedora 43. For other OS, please refer to the official docker documentation
+The following instructions show how to install docker on Fedora 43. For other OS, please refer to the official Docker documentation
 
 https://docs.docker.com/engine/install/fedora/#set-up-the-repository
 
@@ -19,6 +19,7 @@ sudo systemctl enable --now docker
 
 # 5. Verify
 sudo docker run hello-world
+# Pulls image from Docker registry
 ```
 
 
