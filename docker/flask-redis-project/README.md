@@ -137,7 +137,6 @@ services:
     networks:
       - app-network
 
-# Define network for inter-services communication
 networks:
   app-network:
     driver: bridge
@@ -164,7 +163,90 @@ networks:
 
 You should now be able to visit `http://localhost:5002` and verify the API is running.
 
-**Notable commands**
+**Command reference**
 - `docker compose stop` - Stop services (keep containers)
 - `docker compose down` - Stop and remove containers
 - `docker compose down --rmi all` - Remove everything (container, images)
+
+
+---
+
+# Section 2 - Persistent storage
+This section will look to add persistent storage to Redis so data survives container restarts.
+
+**PROBLEM WE'RE SOLVING**
+
+```
+CURRENT (Without Persistence):
+
+Start app → Visit counter 5 times → Counter = 5
+Stop containers → docker-compose down
+Restart → docker-compose up -d
+Visit counter → Counter = 0 ✗ (lost!)
+
+AFTER (With Persistence):
+
+Start app → Visit counter 5 times → Counter = 5
+Stop containers → docker-compose down
+Restart → docker-compose up -d
+Visit counter → Counter = 6 ✓ (persisted!)
+```
+
+We will mount a named [volume](../notes/05-volumes.md) for storage and enable AOF (Append-Only File) so Redis writes changes to disk. The volume is managed by Docker and stored at `/var/lib/docker/volumes/redis-data/_data/`
+
+To implement persistent storage, you will need to update `docker-compose.yml` with these changes:
+```yaml
+version: '3.9'
+
+services:
+  web:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: flask-app
+    ports:
+      - "5002:5002"
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis-db
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data              # CHANGE 1: Mount named volume
+    networks:
+      - app-network
+    command: redis-server --appendonly yes  # CHANGE 2: Enable AOF persistence
+
+volumes:                              # CHANGE 3: Define the named volume
+  redis-data:
+
+networks:
+  app-network:
+    driver: bridge
+```
+
+
+**Testing persistence**
+Start application:
+```bash
+docker compose up -d
+```
+
+Verify volume was created:
+```bash
+docker volume ls
+# Output: local     flask-redis-project_redis-data
+```
+
+Refresh `/count` a few times to get the counter up, then bring the containers down and back up:
+```bash
+docker compose down
+docker compose up -d
+```
+
+Visit `/count` again - the counter should continue from where it left off, not reset to 1.

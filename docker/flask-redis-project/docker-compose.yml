@@ -1,7 +1,6 @@
 version: '3.9'
 
 services:
-  # Flask Web Application
   web:
     build:
       context: ./app
@@ -19,10 +18,15 @@ services:
     container_name: redis-db
     ports:
       - "6379:6379"
+    volumes:
+      - redis-data:/data              # CHANGE 1: Mount named volume
     networks:
       - app-network
+    command: redis-server --appendonly yes  # CHANGE 2: Enable AOF persistence
 
-# Define network for inter-services communication
+volumes:                              # CHANGE 3: Define the named volume
+  redis-data:
+
 networks:
   app-network:
     driver: bridge
