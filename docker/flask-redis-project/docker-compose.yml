@@ -1,6 +1,7 @@
 version: '3.9'
 
 services:
+  # Flask Web Application
   web:
     build:
       context: ./app
@@ -8,25 +9,30 @@ services:
     container_name: flask-app
     ports:
       - "5002:5002"
+    env_file:
+      - .env                        # Load environment variables from .env file
     depends_on:
       - redis
     networks:
       - app-network
 
+  # Redis Database
   redis:
     image: redis:7-alpine
     container_name: redis-db
     ports:
       - "6379:6379"
     volumes:
-      - redis-data:/data              # CHANGE 1: Mount named volume
+      - redis-data:/data            # Persist Redis data to named volume
     networks:
       - app-network
-    command: redis-server --appendonly yes  # CHANGE 2: Enable AOF persistence
+    command: redis-server --appendonly yes  # Enable AOF persistence
 
-volumes:                              # CHANGE 3: Define the named volume
+# Named volume - managed by Docker, persists data across container restarts
+volumes:
   redis-data:
 
+# Shared network so Flask can reach Redis by hostname
 networks:
   app-network:
     driver: bridge

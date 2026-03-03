@@ -1,14 +1,18 @@
-# Flask is the web framework - handles routing and HTTP requests
 from flask import Flask
-# redis-py is the Python client library for talking to Redis
 import redis
+import os  # lets us read environment variables set by Docker
 
-# Create the Flask app instance
 app = Flask(__name__)
 
-# Connect to Redis - 'redis' resolves to the Redis container via Docker Compose networking
-# decode_responses=True returns strings instead of raw bytes
-redis_client = redis.Redis(host='redis', port=6379, decode_responses=True)
+# Read Redis connection details from environment variables
+# Second argument is the default value if the env variable is not set
+redis_host = os.getenv('REDIS_HOST', 'redis')
+redis_port = int(os.getenv('REDIS_PORT', '6379'))  # cast to int - Redis client expects a number, not a string
+
+# Connect to Redis
+redis_client = redis.Redis(host=redis_host, port=redis_port, decode_responses=True)
+
+print(f"Connecting to Redis at {redis_host}:{redis_port}")  # logs to container output - useful for debugging
 
 # Route for the home page - returns a welcome message with a link to the counter
 @app.route('/')

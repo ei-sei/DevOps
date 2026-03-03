@@ -250,3 +250,154 @@ docker compose up -d
 ```
 
 Visit `/count` again - the counter should continue from where it left off, not reset to 1.
+
+---
+
+# Section 3 - Environment variables
+This section will configure Flask to read Redis connection from environment variables instead of hardcoding them.
+
+### PROBLEM WE'RE SOLVING
+```
+CURRENT (Hardcoded):
+
+app.py:
+    redis_host = 'redis'
+    redis_port = 6379
+
+Problems:
+- Can't change without editing code
+- Different values needed for dev/staging/production
+- Secrets mixed with code
+- Need to rebuild image for each environment
+
+AFTER (Environment Variables):
+
+app.py:
+    redis_host = os.getenv('REDIS_HOST', 'redis')
+    redis_port = os.getenv('REDIS_PORT', '6379')
+
+docker-compose.yml:
+    env_file:
+      - .env
+
+Benefits:
+- Same image, different configs
+- No code changes needed
+- Easy to switch between environments
+- Secrets kept separate from code
+```
+
+### How do environment variables work?
+```
+┌────────────────────────────────────────────┐
+│ ENVIRONMENT VARIABLE SOURCES               │
+│                                            │
+│ 1. docker-compose.yml (inline)             │
+│    environment:                            │
+│      - REDIS_HOST=redis                    │
+│                                            │
+│ 2. .env file (in project root)             │
+│    REDIS_HOST=redis                        │
+│    REDIS_PORT=6379                         │
+│                                            │
+│ 3. Command line (highest priority)         │
+│    docker run -e REDIS_HOST=localhost      │
+│                                            │
+│ 4. Python code defaults (fallback)         │
+│    os.getenv('REDIS_HOST', 'redis')        │
+│                           ↑ default value  │
+└────────────────────────────────────────────┘
+```
+
+When Flask starts:
+```
+1. Flask container starts
+2. Docker passes environment variables
+3. Python reads os.getenv()
+4. Uses value from docker-compose.yml or .env
+5. Falls back to default if not set
+```
+
+### Create your .env file
+Create your .env file at the root of your project: `touch .env`
+```
+REDIS_HOST=redis
+REDIS_PORT=6379
+```
+
+### Update Flask App
+
+We are going to update this section:
+```python
+from flask import Flask
+import redis
+
+app = Flask(__name__)
+
+redis_client = redis.Redis(host='redis', port=6379, decode_responses=True)
+```
+With this:
+```python
+from flask import Flask
+import redis
+import os  # lets us read environment variables set by Docker
+
+app = Flask(__name__)
+
+# Read Redis connection details from environment variables
+# Second argument is the default value if the env variable is not set
+redis_host = os.getenv('REDIS_HOST', 'redis')
+redis_port = int(os.getenv('REDIS_PORT', '6379'))  # cast to int - Redis client expects a number, not a string
+
+# Connect to Redis
+redis_client = redis.Redis(host=redis_host, port=redis_port, decode_responses=True)
+
+print(f"Connecting to Redis at {redis_host}:{redis_port}")  # logs to container output - useful for debugging
+```
+
+### Update Docker Compose
+We are going to tell docker compose where to find our values
+```yaml
+version: '3.9'
+
+services:
+  web:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: flask-app
+    ports:
+      - "5002:5002"
+    env_file:                       # ← ADD THIS LINE
+      - .env                        # ← LOOK AT THE .env FILE
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis-db
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data              
+    networks:
+      - app-network
+    command: redis-server --appendonly yes  
+
+volumes:                              
+  redis-data:
+
+networks:
+  app-network:
+    driver: bridge
+
+```
+
+**TEST IF IT IS ALL WORKING**
+`docker compose up --build`
+
+Environment variables are a good way to add flexibility to your application, you will be able to control all values through the .env rather than scanning through your code and hard-coding it. This is especially useful once you start introducing secrets such as API keys. Just make sure to add the .env file to .gitignore so that you don't accidentally push it for the whole world to see.
+
+
