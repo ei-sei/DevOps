@@ -59,7 +59,7 @@ redis_client = redis.Redis(host='redis', port=6379, decode_responses=True)
 @app.route('/')
 def home():
     return '''
-        <h1>Welcome to Flask + Redis!</h1>
+        <h4>Welcome to Flask + Redis!</h4>
         <a href="/count"><button>Go to Counter</button></a>
     '''
 
@@ -82,7 +82,7 @@ if __name__ == '__main__':
 Flask==3.0.0
 redis==5.0.1
 ```
-> We could just list out the dependencies as `RUN pip install flask redis` but using requirements.txt is just much more conventional for readbility, portability, layer caching and tooling.
+> We could just list out the dependencies as `RUN pip install flask redis` but using requirements.txt is just much more conventional for readability, portability, layer caching and tooling.
 
 **Create the `Dockerfile`**
 ```dockerfile
@@ -147,13 +147,12 @@ networks:
 **What each section does:**
 | Section | Purpose |
 |---------|---------|
-| `web:` | Flask application service |
-| `build: ./app` | Build from Dockerfile in ./app |
-| `ports: "5002:5002"` | Map host port 5002 to container port 5002 |
-| `depends_on: redis` | Start redis before web |
-| `redis:` | Redis database service |
-| `image: redis:7-alpine` | Use official Redis image (lightweight) |
-| `networks: app-network` | Both services on same network, can communicate by hostname |
+| `build` | Used for `web` because it's our custom app - points Docker at our Dockerfile |
+| `image` | Used for `redis` because we just need the official image with no changes |
+| `ports: "5002:5002"` | `host:container` - forwards port 5002 on your machine into the container |
+| `depends_on: redis` | Starts Redis before Flask - waits for the container to start, not Redis to be ready |
+| `networks: app-network` | Shared network so Flask can reach Redis by hostname (`host='redis'` in app.py) |
+| `redis:7-alpine` | Alpine base image - much smaller than the default, faster to pull |
 
 ---
 
