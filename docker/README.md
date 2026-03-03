@@ -11,21 +11,25 @@ Documentation of my Docker and containerisation journey.
 ## Repository Structure
 
 ```
-docker/
+DevOps/
 ├── README.md
+├── assets/
+│   ├── containers-vs-VMs.png
+│   ├── docker-architecture.png
+│   └── docker-overview.png
 ├── notes/
+│   ├── 00-docker-setup.md
 │   ├── 01-core-concepts.md
 │   ├── 02-dockerfile.md
 │   ├── 03-networking.md
-│   ├── 04-volumes.md
-│   ├── 05-compose.md
+│   ├── 04-compose.md
+│   ├── 05-volumes.md
 │   └── 06-best-practices.md
-├── labs/
-│   ├── 01-hello-world/
-│   ├── 02-dockerfile-basics/
-│   ├── 03-registry/
-│   ├── 04-flask-redis/
-│   └── 05-networking/
-└── projects/
-    └── monitoring-stack/
+└── flask-redis-project/
+    ├── README.md
+    ├── docker-compose.yml
+    └── app/
+        ├── app.py
+        ├── Dockerfile
+        └── requirements.txt
 ```
