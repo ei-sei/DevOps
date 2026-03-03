@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  # Flask Web Application
+  web:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: flask-app
+    ports:
+      - "5002:5002"
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis-db
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+# Define network for inter-services communication
+networks:
+  app-network:
+    driver: bridge
