@@ -1,202 +1,204 @@
 # 2. Identity & Access Management (IAM)
 
-> Answer from memory after watching videos. Mark `???` for gaps, then go back and fill them.
-
 ---
 
 ## Part 1: What is IAM
 
 What is IAM?
-> 
+> Identity and Access Management - A way to manage users and permissions, so who can access what resource and how.
 
 What is the difference between authentication and authorisation?
-> 
+> Authentication verifies who you are using credentials such as passwords. Authorisation determines users permissions (what you can access)
 
 Is IAM a global service or a regional service?
-> 
+> Global - IAM users/roles/policies work across all regions
 
 ---
 
 ## Part 2: IAM Users
 
 What is an IAM User?
-> 
+> Long term identity created within the cloud service representing a specific person or application
 
 What are the two types of access an IAM User can have?
-> 
+> console access (password), programmatic access (access keys)
 
 When would you create an IAM User?
-> 
+> when a person needs their own credentials to interact with AWS, or when an application needs long-term credentials (though for applications, roles are usually preferred now)
 
 ---
 
 ## Part 3: IAM Groups
 
 What is an IAM Group?
-> 
+> A group with defined permission sets - only users can be added to the group to inherit the permissions.
 
 Can a user belong to multiple groups?
-> 
+> Yes - they will also inherit the permissions from both groups
 
 Can groups be nested (a group inside another group)?
-> 
+> No
 
 Why should you manage permissions through groups instead of attaching policies directly to users?
-> 
+> Easier to manage at scale - attach a policy once to a group instead of individually to each user. Also ensures consistency, e.g. 10 developers all get the exact same permissions rather than risking one being configured differently.
 
 ---
 
 ## Part 4: IAM Policies
 
 What is an IAM Policy?
-> 
+> A JSON document that defines what actions are allowed or denied on which AWS resources.
 
 What format is a policy written in?
-> 
+> JSON
 
 What are the main parts of a policy document (Version, Statement, Effect, Action, Resource, Condition)?
-> 
+> - Version - policy language version (always "2012-10-17")
+> - Statement - the container for one or more permission blocks
+> - Effect - allow or deny
+> - Action - what API calls (e.g. s3:GetObject)
+> - Resource - which AWS resource (ARN)
+> - Condition - optional, when the rule applies (e.g. only from a specific IP)
 
 What does `"Effect": "Allow"` do?
-> 
+> Allow: permits the specified actions on the specified resources
 
 What does `"Effect": "Deny"` do?
-> 
+> Deny: blocks the specified actions on the specified resources
 
 What happens when an explicit Allow and an explicit Deny conflict on the same action?
-> 
+> The deny action will always take priority
 
 What is the default behaviour if there is no explicit Allow or Deny? (implicit deny)
-> 
+> Deny
 
 What is the difference between an AWS managed policy and a customer managed policy?
-> 
+> AWS managed policies are maintained and updated by AWS (e.g. when new services launch), while customer managed policies give you full control but you're responsible for maintaining them. Examples: `AmazonS3ReadOnlyAccess` is AWS managed; a policy you write for your specific S3 bucket is customer managed.
 
 What is an inline policy? When would you use one?
-> 
+> Inline policies are embedded directly into a single entity, resulting in a strict 1:1 relationship where the policy is deleted when the entity is removed. In practice you will use managed policies for almost everything as they're easier to manage. You will use inline policy when you want a permission that is strictly tied to one specific user or role and should never accidentally end up attached to anything else.
 
 What does "least privilege" mean?
-> 
+> Only the minimum permissions needed
 
 Why is `"Resource": "*"` dangerous?
-> 
+> Applies the action to all AWS resources, which violates least privilege. The real danger is combining `"Action": "*"` with `"Resource": "*"` - this gives unrestricted access to everything in the account.
 
 ---
 
 ## Part 5: IAM Roles
 
 What is an IAM Role?
-> 
+> entity that provides temporary security credentials with specific permissions that defines allowed actions for authorized users, applications, or services
 
 How is a Role different from a User?
-> 
+> A user has a fixed identity, a role can be assumed by anyone/anything the trust policy allows.
 
 When would you use a Role instead of a User?
-> 
+> When you need temporary short term permissions for services (like EC2, Lambda) or cross-account access.
 
 What is a trust policy?
-> 
+> Trust policy specifies which trusted account members are allowed to assume roles.
 
 What is an instance profile?
-> 
+> A container for an IAM role which passes information to an EC2 instance
 
 How does an EC2 instance get AWS permissions without access keys?
-> 
+> Instance profile, by attaching an IAM role via an instance profile, the EC2 instance receives temporary credentials automatically.
 
 What is the difference between the trust policy and the permissions policy on a role?
-> 
+> Permission policy determines whether the request is allowed or denied. Trust policy determines who can assume an IAM role.
 
 ---
 
 ## Part 6: Security Best Practices
 
 What is MFA and why use it?
-> 
+> Multi-Factor Authentication - A second form of verification beyond a password, this adds another layer of security to your account. 
 
 What are Access Keys used for?
-> 
+> programmatic access - CLI, SDKs, and direct API calls.
 
 Why should you never hardcode Access Keys in code or commit them to Git?
-> 
+> Exposes your keys to the public, this compromises your account as other people with this key can access your aws. Even in private repos, keys can leak through history, forks, or accidental public switches. Use roles or environment variables instead.
 
 How often should you rotate Access Keys?
-> 
+> AWS recommends rotating regularly (every 90 days is common guidance). Avoid long term keys entirely and use roles instead.
 
 What is the IAM Credential Report? What does it show?
-> 
+> account-level report that lists all IAM users and the status of their credentials (passwords, access keys, MFA). It shows when they were last used, last rotated, and whether MFA is enabled.
 
-What is IAM Access Analyzer?
-> 
+What is IAM Access Analyser?
+> a security service that analyses resource-based policies to help you identify, monitor, and manage unintended public or cross-account access to your AWS resources
 
 ---
 
 ## Part 7: Cross-Account Access
 
 How do you grant access to resources in another AWS account?
-> 
+> Create a role in the target account with a trust policy and permissions policy
 
 What does `sts:AssumeRole` do?
-> 
+> Returns a set of temporary security credentials for a specific role.
 
 Walk through the flow: User in Account A needs to access S3 in Account B.
-> 
+> Account B creates a role with a trust policy allowing Account A and a permissions policy granting S3 access. Account A's user then calls `sts:AssumeRole` to assume that role and receives temporary credentials.
 
 ---
 
 ## Part 8: Identity Federation
 
 What is identity federation?
-> 
+> A security framework that enables users to securely access multiple applications, systems, or organisations using a single set of credentials (username/password). These external credentials get mapped to IAM roles, so users get temporary AWS access without needing an IAM user
 
 Why would a company use federation instead of creating IAM Users for every employee?
-> 
+> To centralise identity management, strengthen security and reduce operational overhead. If organisations already have corporate credentials (e.g. Active Directory, Google Workspace), why create a second set of credentials to manage.
 
 What is AWS IAM Identity Center (formerly SSO)?
-> 
-
+> An AWS service that provides a central place to manage SSO access across multiple AWS accounts and business applications, with built-in integration with identity providers like Active Directory.
 ---
 
 ## Commands to Learn
 
 ```bash
-# What does this do?
+# List IAM users
 aws iam list-users
 ```
 > 
 
 ```bash
-# What does this do?
+# Create an IAM user with name devops-user
 aws iam create-user --user-name devops-user
 ```
 > 
 
 ```bash
-# What does this do?
+# returns information about the IAM identity making the call (account ID, user ARN, user ID)
 aws sts get-caller-identity
 ```
 > 
 
 ```bash
-# What does this do?
+# Attach S3 read only policy to user
 aws iam attach-user-policy --user-name devops-user \
   --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
 ```
 > 
 
 ```bash
-# What does this do?
+# Return the policies attached to specified user
 aws iam list-attached-user-policies --user-name devops-user
 ```
 > 
 
 ```bash
-# What does this do?
+# List all IAM roles in the account
 aws iam list-roles
 ```
 > 
 
 ```bash
-# What does this do?
+# assumes the specified role and returns temporary security credentials for that role
 aws sts assume-role --role-arn arn:aws:iam::123456789012:role/MyRole \
   --role-session-name my-session
 ```
@@ -217,16 +219,16 @@ aws sts assume-role --role-arn arn:aws:iam::123456789012:role/MyRole \
 ## Quick Quiz
 
 1. What is the difference between an IAM User, Group, and Role?
-   > 
+   > User is an individual entity with long-term credentials. Group is a collection of users that share the same permissions. Role provides temporary security credentials that can be assumed by users, application, or AWS services.
 
 2. What happens when there is an explicit Deny and an explicit Allow on the same action?
-   > 
+   > Deny will take priority
 
 3. How would you give an EC2 instance access to S3 without using access keys?
-   > 
+   > Instance profile
 
 ---
 
-## Confidence: 🔴 🟡 🟢
+## Confidence: 🟢
 
-**Date completed:** ___________
+**Date completed:** 10/03/26
