@@ -114,7 +114,7 @@ What is the difference between the trust policy and the permissions policy on a 
 ## Part 6: Security Best Practices
 
 What is MFA and why use it?
-> Multi-Factor Authentication - A second form of verification beyond a password, this adds another layer of security to your account. 
+> Multi-Factor Authentication (MFA) - is a security mechanism that requires users to verify their identity using two or more independent factors before gaining access to a system. These factors fall into three categories: something you know (a password or PIN), something you have (a phone, hardware token, or authenticator app), and something you are (a fingerprint or face scan). The idea is that even if an attacker steals your password, they still can't log in without the second factor - significantly reducing the risk of unauthorized access. Common examples include entering a password and then a time-based one-time code (TOTP) from an app like Google Authenticator, or receiving an SMS code after logging in.
 
 What are Access Keys used for?
 > programmatic access - CLI, SDKs, and direct API calls.
