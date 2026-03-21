@@ -46,7 +46,7 @@ What are YOU responsible for?
 > Data, application code, IAM, OS patching on EC2, Network/security group configuration, Encryption, Firewall configuration
 
 Give an example of something that is your responsibility, not AWS's:
-> IAM - ensuring users have only the necessary permission (![least privilege](/notes/02-iam.md#part-4-iam-policies))
+> IAM - ensuring users have only the necessary permission ([least privilege](/notes/02-iam.md#part-4-iam-policies))
 
 ---
 
@@ -112,7 +112,7 @@ What is the first thing you should do after creating an AWS account?
 > Set up MFA on root, create IAM admin user, set up billing alerts.
 
 What is MFA?
-> ![Multi-Factor Authentication](/notes/02-iam.md#part-6-security-best-practices) - require a second form of verification beyond a password (e.g. code from an authenticator app)
+> [Multi-Factor Authentication](/notes/02-iam.md#part-6-security-best-practices) - require a second form of verification beyond a password (e.g. code from an authenticator app)
 
 Why should you enable MFA on the root account immediately?
 > To add another layer of security, protecting the root account should be priority as this has unrestricted access and can't be limited by IAM policies.
@@ -125,7 +125,7 @@ What is the difference between the root account and an IAM admin user?
 ## Part 6: Billing and Cost Management
 
 How do you set up a billing alarm?
-> CloudWatch alarms with billing metrics and or Billing and Cost Management - Budgets
+> [CloudWatch](/notes/13-monitoring.md#part-3-cloudwatch-alarms) alarms with billing metrics and or Billing and Cost Management - Budgets
 
 What is AWS Budgets?
 > You can setup budgets that alert you within a specified threshold. This has the ability to automate actions when thresholds are hit (e.g. stop an EC2 instance)
