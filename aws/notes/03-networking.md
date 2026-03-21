@@ -1,189 +1,201 @@
 # 9. VPC & Networking
 
-> Answer from memory after watching videos. Mark `???` for gaps, then go back and fill them.
-
 ---
 
 ## Part 1: What is a VPC
 
 What is a VPC (Virtual Private Cloud)?
-> 
+> A secure, isolated, and logically private network within the public cloud.
 
 Why do you need a VPC?
-> 
+> To build a network infrastructure within the cloud. You can control the security, IP addressing, routing, access.
 
 What is the default VPC? Does every Region have one?
-> 
+> A preconfigured, logically isolated network automatically created by AWS for each region
 
 What is the difference between the default VPC and a custom VPC?
-> 
+> default VPC is pre-configured, whereas custom VPC offer more flexibility in customising your network with CIDR range, subnet layout, route tables, gateways.
 
 ---
 
 ## Part 2: CIDR Blocks
 
 What is a CIDR block?
-> 
+> Classless Inter-Domain Routing - a method for defining a range of IP addresses using a base IP and a prefix length (e.g. 10.0.0.0/16)
 
 What does 10.0.0.0/16 mean?
-> 
+> The first 16 bits are the fixed network portion (10.0), the remaining 16 bits are available for hosts, giving a range of 10.0.0.0 - 10.0.255.255
 
 How many IP addresses does /16 give you?
-> 
+> 65,536 (2^16)
 
 How many IP addresses does /24 give you?
-> 
+> 256 (2^8)
 
 Can you change a VPC's CIDR block after creating it?
-> 
+> You cannot change the original CIDR block, but you can add secondary CIDR blocks to expand the VPC
 
 What CIDR ranges are commonly used for private networks?
-> 
+> 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16 (RFC 1918)
 
 ---
 
 ## Part 3: Subnets
 
 What is a subnet?
-> 
+> a logical, segmented partition of a larger IP network. Each subnet gets its own CIDR block (e.g. 10.0.1.0/24) and sits in one AZ
 
 Can a subnet span multiple Availability Zones?
-> 
+> No
 
 How many IP addresses does AWS reserve per subnet? Which ones?
-> 
+> AWS reserves exactly 5 IP addresses in every subnet for networking management:
+> - First address: Network address
+> - Second address: VPC router address
+> - Third address: DNS server (base of the VPC network range +2)
+> - Fourth address: Future use
+> - Last address: Broadcast address
 
 How many usable IPs are in a /24 subnet?
-> 
+> 251
 
 Why should you create subnets in at least 2 AZs?
-> 
+> High-availability, if one AZ goes down you will have redundancy as your app will still be running over the other subnet
 
 ---
 
 ## Part 4: Public vs Private Subnets
 
 What makes a subnet "public"?
-> 
+> Route table has a route to an internet gateway (e.g. 0.0.0.0/0 to IGW). Also instances need a public IP assigned.
 
 What makes a subnet "private"?
-> 
+> No route to an Internet Gateway in its route table.
 
 Why would you put resources in a private subnet?
-> 
+> To protect the resources within the subnet from direct exposure to the internet
 
 What types of resources typically go in public subnets?
-> 
+> load-balancers, NAT gateways, bastion hosts.
 
 What types of resources typically go in private subnets?
-> 
+> Databases, application servers, caches, anything that shouldn't be directly reachable from the internet.
 
 ---
 
 ## Part 5: Internet Gateway
 
 What is an Internet Gateway (IGW)?
-> 
+> a VPC component that allows communication between your VPC and the internet
 
 How many IGWs can a VPC have?
-> 
+> One
 
 What are ALL the requirements for an EC2 instance to reach the internet?
-> 
+> VPC, Subnet, Public IP assigned to the instance, route table point 0.0.0.0/0 to the IGW, security group.
 
 Is an IGW a single point of failure?
-> 
+> No, it is highly available and horizontally scaled and redundant component.
 
 What happens if you remove the IGW route from a route table?
-> 
+> the subnet becomes a private subnet. Resources in it lose internet access but can still communicate within the VPC.
 
 ---
 
 ## Part 6: Route Tables
 
 What is a route table?
-> 
+> a set of rules that determine where network traffic is directed within a VPC
 
 What is the "local" route? Can you remove it?
-> 
+> The default route for communication within the VPC, can not be removed.
 
 What route entry makes a subnet public?
-> 
+> 0.0.0.0/0 -> IGW
 
 What is the main route table?
-> 
+> The main route table is the default routing table automatically created with an Amazon Virtual Private Cloud (VPC) that manages traffic for all subnets not explicitly associated with a custom table.
 
 Can different subnets use different route tables?
-> 
+> Yes
 
 How does route priority work? (most specific route wins)
-> 
+> Route priority determines traffic flow by prioritizing the most specific network prefix (longest subnet mask) in the routing table, regardless of source or protocol. A /24 route is always chosen over a /23 or default route (0.0.0.0/0)
 
 ---
 
 ## Part 7: NAT Gateway
 
 What is a NAT Gateway?
-> 
+> NAT Gateway lets instances in private subnets make outbound internet requests while keeping them unreachable from the internet. This sits inside the public subnet because it will need access to the IGW to reach the internet
 
 Why would a private subnet need outbound internet access?
-> 
+> To allow updates from external resources such as OS updates, downloading packages, calling external APIs
 
 Which subnet does the NAT Gateway go in, public or private?
-> 
+> public
 
 What does the private subnet's route table entry look like for NAT?
-> 
+> 0.0.0.0/0 -> NAT Gateway
 
 What is the difference between an Internet Gateway and a NAT Gateway?
-> 
+> IGW allows inbound and outbound internet traffic whereas NAT Gateway only allows outbound.
 
 Does a NAT Gateway allow inbound connections from the internet?
-> 
+> No
 
 How do you make a NAT Gateway highly available?
-> 
+> Deploy a NAT gateway in each AZ. A single NAT Gateway only covers its own AZ, so if that AZ goes down, private subnets in other AZs lose outbound access.
 
 What does a NAT Gateway cost?
-> 
+> Charges per hour and per GB of data processed. They're one of the more expensive VPC components.
 
 What is the difference between a NAT Gateway and a NAT Instance?
-> 
+> NAT Gateway is a managed AWS service (highly available, scales automatically). NAT Instance is an EC2 instance you manage yourself running NAT software. NAT Gateway is preferred, NAT Instance is cheaper but more work.
 
 ---
 
 ## Part 8: Putting it Together
 
 Draw the architecture of a VPC with public and private subnets across 2 AZs. Include the IGW, NAT Gateway, and route tables:
-> 
+![VPC architecture](/assets/notes/vpc-subnet-az-igw-natgateway.png)
 
 Walk through the flow: a user makes an HTTP request to your app in a public subnet.
-> 
+> 1. User sends HTTP request from the internet
+> 2. Request hits the IGW
+> 3. Route table directs traffic to the public subnet
+> 4. Security group checks if inbound traffic on port 80/443 is allowed
+> 5. Request reaches the EC2 instance
 
 Walk through the flow: an instance in a private subnet needs to download a package from the internet.
-> 
+> 1. Instance in private subnet sends outbound request
+> 2. Route table sends 0.0.0.0/0 traffic to the NAT Gateway
+> 3. NAT Gateway (in the public subnet) translates the private IP to its own public IP
+> 4. Traffic goes through the IGW to the internet
+> 5. Response comes back the same path in reverse.
 
 ---
 
 ## Part 9: VPC Peering
 
 What is VPC Peering?
-> 
+> A network connection between two VPCs that allows traffic to route between them using Private IP addresses, acting as if they are on the same network.
 
 What does "no transitive peering" mean?
-> 
+> "No transitive peering" means that VPC (Virtual Private Cloud) peering connections are one-to-one and cannot be chained. If VPC A is connected to VPC B, and VPC B is connected to VPC C, traffic cannot pass through VPC B to communicate between VPC A and VPC C.
 
 Can CIDR blocks overlap between peered VPCs?
-> 
+> No, the whole point of peering a network is so that they behave as one. 
 
 Can you peer VPCs across Regions?
-> 
+> Yes
 
 Can you peer VPCs across accounts?
-> 
+> Yes
 
 What needs to be configured on both sides of a peering connection?
-> 
+> Both VPCs need their route tables updated to point at the peering connection.
+
 
 ---
 
