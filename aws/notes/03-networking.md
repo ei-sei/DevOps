@@ -124,10 +124,38 @@ How does route priority work? (most specific route wins)
 
 ---
 
-## Part 7: NAT Gateway
+## Part 7: Elastic IP
+
+What is an Elastic IP?
+> A static, public IPv4 address assigned to your AWS account that you can associate and disassociate with EC2 instances or NAT Gateways. Unlike regular public IPs, it persists even when the resource is stopped.
+
+What is the difference between a public IP and an Elastic IP?
+> A public IP is automatically assigned when you launch an instance in a public subnet, but changes when the instance stops or reboots. An Elastic IP is static and remains associated with your account until you explicitly release it.
+
+What are the main use cases for Elastic IPs?
+> NAT Gateways (require an Elastic IP to function), bastion hosts (stable access), failover scenarios (quickly reassign to another instance), or DNS aliases that need to remain constant.
+
+Can an Elastic IP be moved between instances?
+> Yes, you can disassociate an Elastic IP from one instance and associate it with another. This is useful for failover scenarios.
+
+Is an Elastic IP specific to an AZ?
+> No, an Elastic IP is regional but can be associated with instances in any AZ within that region.
+
+How much does an Elastic IP cost?
+> Charges per hour for each address not currently associated with a running instance. If associated with a running instance, there is no additional charge (you only pay for data transfer if applicable).
+
+What happens if you don't use an Elastic IP?
+> You'll be charged for it. This is why you should release unused Elastic IPs.
+
+Can you have Elastic IPs across different regions?
+> No, Elastic IPs are region-specific. You need separate Elastic IPs for each region.
+
+---
+
+## Part 8: NAT Gateway
 
 What is a NAT Gateway?
-> NAT Gateway lets instances in private subnets make outbound internet requests while keeping them unreachable from the internet. This sits inside the public subnet because it will need access to the IGW to reach the internet
+> NAT Gateway lets instances in private subnets make outbound internet requests while keeping them unreachable from the internet. This sits inside the public subnet because it will need access to the IGW to reach the internet. It requires an [Elastic IP](./03-networking.md#part-7-elastic-ip) to function.
 
 Why would a private subnet need outbound internet access?
 > To allow updates from external resources such as OS updates, downloading packages, calling external APIs
@@ -145,7 +173,7 @@ Does a NAT Gateway allow inbound connections from the internet?
 > No
 
 How do you make a NAT Gateway highly available?
-> Deploy a NAT gateway in each AZ. A single NAT Gateway only covers its own AZ, so if that AZ goes down, private subnets in other AZs lose outbound access.
+> Deploy a NAT gateway in each AZ. Each requires its own [Elastic IP](./03-networking.md#part-7-elastic-ip). A single NAT Gateway only covers its own AZ, so if that AZ goes down, private subnets in other AZs lose outbound access.
 
 What does a NAT Gateway cost?
 > Charges per hour and per GB of data processed. They're one of the more expensive VPC components.
@@ -155,7 +183,7 @@ What is the difference between a NAT Gateway and a NAT Instance?
 
 ---
 
-## Part 8: Putting it Together
+## Part 9: Putting it Together
 
 Draw the architecture of a VPC with public and private subnets across 2 AZs. Include the IGW, NAT Gateway, and route tables:
 ![VPC architecture](/assets/notes/vpc-subnet-az-igw-natgateway.png)
@@ -176,7 +204,7 @@ Walk through the flow: an instance in a private subnet needs to download a packa
 
 ---
 
-## Part 9: VPC Peering
+## Part 10: VPC Peering
 
 What is VPC Peering?
 > A network connection between two VPCs that allows traffic to route between them using Private IP addresses, acting as if they are on the same network.
@@ -199,7 +227,7 @@ What needs to be configured on both sides of a peering connection?
 
 ---
 
-## Part 10: VPC Endpoints
+## Part 11: VPC Endpoints
 
 What is a VPC Endpoint?
 > 
@@ -221,7 +249,7 @@ What is AWS PrivateLink?
 
 ---
 
-## Part 11: Transit Gateway
+## Part 12: Transit Gateway
 
 What is Transit Gateway?
 > 
@@ -237,7 +265,7 @@ When would you use Transit Gateway instead of VPC Peering?
 
 ---
 
-## Part 12: VPN and Direct Connect
+## Part 13: VPN and Direct Connect
 
 What is a Site-to-Site VPN?
 > 
@@ -259,7 +287,7 @@ When would you need Direct Connect over VPN?
 
 ---
 
-## Part 13: Troubleshooting Connectivity
+## Part 14: Troubleshooting Connectivity
 
 Walk through the troubleshooting order for connectivity issues:
 1. > 
@@ -276,7 +304,7 @@ What is the VPC Reachability Analyzer?
 
 ---
 
-## Part 14: Bastion Hosts
+## Part 15: Bastion Hosts
 
 What is a bastion host?
 >
@@ -295,7 +323,7 @@ What is a better alternative to bastion hosts for accessing private instances?
 
 ---
 
-## Part 15: IPv6 and Egress Only Internet Gateway
+## Part 16: IPv6 and Egress Only Internet Gateway
 
 Does AWS support IPv6 in VPCs?
 >
@@ -314,7 +342,7 @@ Why would you use an Egress Only Internet Gateway?
 
 ---
 
-## Part 16: Networking Costs in AWS
+## Part 17: Networking Costs in AWS
 
 Does traffic within the same AZ cost money?
 >
@@ -339,7 +367,7 @@ How do VPC Endpoints help reduce networking costs?
 
 ---
 
-## Part 17: AWS Network Firewall
+## Part 18: AWS Network Firewall
 
 What is AWS Network Firewall?
 >
