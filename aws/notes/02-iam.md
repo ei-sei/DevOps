@@ -79,7 +79,7 @@ What is an inline policy? When would you use one?
 > Inline policies are embedded directly into a single entity, resulting in a strict 1:1 relationship where the policy is deleted when the entity is removed. In practice you will use managed policies for almost everything as they're easier to manage. You will use inline policy when you want a permission that is strictly tied to one specific user or role and should never accidentally end up attached to anything else.
 
 What does "least privilege" mean?
-> Only the minimum permissions needed
+> Least privilege means giving users, services, or systems only the minimum permissions required to perform their specific job - nothing more, nothing less. The principle exists to limit the blast radius of a breach or misconfiguration: if an IAM role, EC2 instance, or Lambda function is compromised, the attacker can only do what that entity was permitted to do. In AWS, this means avoiding wildcard permissions like `s3:*` or `AdministratorAccess` unless absolutely necessary, and instead scoping policies to exact actions on exact resources.
 
 Why is `"Resource": "*"` dangerous?
 > Applies the action to all AWS resources, which violates least privilege. The real danger is combining `"Action": "*"` with `"Resource": "*"` - this gives unrestricted access to everything in the account.
