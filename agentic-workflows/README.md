@@ -13,7 +13,7 @@ This repository uses a **branch-based organisation** instead of subdirectories. 
 | Branch | Description |
 |--------|-------------|
 | [`linux-lab-notebook`](../../tree/linux-lab-notebook) | Linux administration notes, commands, and lab exercises |
-| [`git-runbook`](../../tree/git-runbook) | Operational runbooks and troubleshooting guides |
+| [`git`](../../tree/git) | Operational runbooks and troubleshooting guides |
 | [`automation-scripts`](../../tree/automation-scripts) | Shell scripts and automation utilities |
 | [`networking`](../../tree/networking) | Networking fundamentals, DNS lab, and Nginx on EC2 with Cloudflare DNS |
 
