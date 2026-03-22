@@ -21,6 +21,7 @@ This repository uses a **branch-based organisation** instead of subdirectories. 
 
 | Branch | Description |
 |--------|-------------|
+| [`aws`](../../tree/aws) | AWS fundamentals|
 | [`aws-web-server`](../../tree/aws-web-server) | AWS EC2 web server deployment and configuration |
 | [`serverless-url-shortener`](../../tree/serverless-url-shortener) | Serverless URL shortener using AWS Lambda, API Gateway, and DynamoDB |
 
@@ -57,21 +58,6 @@ This repository uses a **branch-based organisation** instead of subdirectories. 
 |--------|-------------|
 | [`capstone-project`](../../tree/capstone-project) | End-to-end DevOps project combining all skills |
 
-## Getting Started
-
-To explore a specific project, switch to its branch:
-
-```bash
-# Clone the repository
-git clone https://github.com/ei-sei/DevOps.git
-cd DevOps
-
-# List all available branches
-git branch -a
-
-# Switch to a project branch
-git checkout <branch-name>
-```
 
 ## Branch Workflow
 
@@ -81,6 +67,7 @@ main (this README)
  ├── git-runbook
  ├── automation-scripts
  ├── networking
+ ├── aws
  ├── aws-web-server
  ├── serverless-url-shortener
  ├── docker-lab
