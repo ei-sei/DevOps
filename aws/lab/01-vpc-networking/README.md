@@ -17,7 +17,7 @@ Create a custom VPC with the following:
 
 ---
 
-### 1. Create the VPC
+### 1. Create the [VPC](/notes/03-networking.md#part-1-what-is-a-vpc)
 
 - Custom VPC (`10.0.0.0/16`)
 - One public subnet
@@ -41,21 +41,21 @@ Create the subnets for the associated VPC:
 
 ### 2. Internet Access
 
-Create and attach an Internet Gateway:
+Create and attach an [Internet Gateway](/notes/03-networking.md#part-5-internet-gateway):
 
 ![igw](/assets/01-lab/igw.png)
 
-Create an Elastic IP:
+Create an [Elastic IP](/notes/03-networking.md#part-7-elastic-ip):
 
 ![elastic ip](/assets/01-lab/elastic-ip.png)
 
-Create a NAT Gateway in the public subnet:
+Create a [NAT Gateway](/notes/03-networking.md#part-8-nat-gateway) in the public subnet:
 
 ![nat gateway](/assets/01-lab/nat-gateway.png)
 
 ---
 
-### 3. Route Tables
+### 3. [Route Tables](/notes/03-networking.md#part-6-route-tables)
 
 **Public route table** - default route via IGW
 
@@ -71,7 +71,7 @@ Create a NAT Gateway in the public subnet:
 
 ---
 
-### 4. EC2 Instances
+### 4. [EC2](/notes/04-ec2.md#part-1-what-is-ec2) Instances
 
 **Public EC2** - launch in public subnet with public IP
 
@@ -87,7 +87,7 @@ Create a NAT Gateway in the public subnet:
 
 ---
 
-### 5. Security Groups
+### 5. [Security Groups](/notes/05-security-groups.md#part-1-what-is-a-security-group)
 
 **Public EC2 SG** - allow SSH/HTTP only from your IP
 
