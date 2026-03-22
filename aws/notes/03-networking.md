@@ -173,13 +173,22 @@ Does a NAT Gateway allow inbound connections from the internet?
 > No
 
 How do you make a NAT Gateway highly available?
-> Deploy a NAT gateway in each AZ. Each requires its own [Elastic IP](./03-networking.md#part-7-elastic-ip). A single NAT Gateway only covers its own AZ, so if that AZ goes down, private subnets in other AZs lose outbound access.
+> Deploy a NAT gateway in each AZ. Each requires its own Elastic IP. A single NAT Gateway only covers its own AZ, so if that AZ goes down, private subnets in other AZs lose outbound access.
 
 What does a NAT Gateway cost?
 > Charges per hour and per GB of data processed. They're one of the more expensive VPC components.
 
 What is the difference between a NAT Gateway and a NAT Instance?
 > NAT Gateway is a managed AWS service (highly available, scales automatically). NAT Instance is an EC2 instance you manage yourself running NAT software. NAT Gateway is preferred, NAT Instance is cheaper but more work.
+
+What is a Regional NAT Gateway (introduced late 2025)?
+> Starting in late 2025, AWS made NAT Gateways regional - a single NAT Gateway can now serve traffic from private subnets across multiple AZs in the same region, rather than being limited to its own AZ.
+
+How is this different from the traditional (Zonal) per-AZ NAT Gateway setup?
+> Previously, you needed one NAT Gateway per AZ for high availability (e.g. 3 AZs = 3 NAT Gateways, 3 Elastic IPs). With regional NAT Gateways, one gateway can handle outbound traffic from all AZs (thus requiring only 1 Elastic IP), simplifying the setup and reducing cost.
+
+Does a Regional NAT Gateway eliminate cross-AZ data transfer charges?
+> No. Traffic from a private subnet in a different AZ still crosses AZ boundaries to reach the NAT Gateway, which incurs cross-AZ data transfer charges. For high-traffic workloads, a per-AZ NAT Gateway may still be cheaper overall.
 
 ---
 
