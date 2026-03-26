@@ -167,13 +167,6 @@ health check:
 Optional but recommended - Edit your HTTP (port 80) listener to redirect to HTTPS instead of forwarding to the target group.
 ![redirect http](/assets/02-lab/redirect-http.png)
 
-
-
-
-
-
-
-
 **Add an Auto Scaling Group behind the ALB.**
 
 1. Create a Launch Template
@@ -192,7 +185,7 @@ systemctl start httpd
 systemctl enable httpd
 ```
 
-2. Create Auto Scaling Group
+1. Create Auto Scaling Group
   -  EC2 > Auto Scaling Groups > Create
   -  Name: project02-asg
   -  Launch template: project02-lt
@@ -205,3 +198,6 @@ systemctl enable httpd
 
 
 3. Clean up - Once ASG instances show healthy in the target group, terminate your original two EC2 instances.
+
+![test](../../assets/02-lab/test4.png)
+![test](../../assets/02-lab/test5.png)
