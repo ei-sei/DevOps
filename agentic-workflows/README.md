@@ -17,17 +17,19 @@ This repository uses a branch-based organisation instead of subdirectories. Each
 | [`automation-scripts`](../../tree/automation-scripts) | Shell scripts and automation utilities |
 | [`networking`](../../tree/networking) | Networking fundamentals, DNS lab, and Nginx on EC2 with Cloudflare DNS |
 
+### Containerisation
+
+| Branch | Description |
+|--------|-------------|
+| [`docker`](../../tree/docker) | Docker fundamentals, Dockerfiles, and compose examples |
+
 ### Cloud
 
 | Branch | Description |
 |--------|-------------|
 | [`aws`](../../tree/aws) | AWS labs covering VPC, ALB, S3, CloudFront, Route53, Lambda, API Gateway, DynamoDB, and IAM |
 
-### Containerisation
 
-| Branch | Description |
-|--------|-------------|
-| [`docker`](../../tree/docker) | Docker fundamentals, Dockerfiles, and compose examples |
 
 ## Technologies
 
