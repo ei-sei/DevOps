@@ -159,6 +159,7 @@ sudo ./aws/install
 
 What does `aws configure` do?
 > configures your CLI with your AWS credentials and stores config within `.aws` inside your home directory.
+> [How to setup Access keys?](/notes/02-iam.md#part-6-security-best-practices)
 
 What four things does `aws configure` ask you for?
 > - AWS Access Key ID: The public key for your IAM user.
