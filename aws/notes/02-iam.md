@@ -119,6 +119,9 @@ What is MFA and why use it?
 What are Access Keys used for?
 > programmatic access - CLI, SDKs, and direct API calls.
 
+How to create an access key?
+> Go to the AWS Console, click your account name in the top right, select Security credentials, scroll to Access keys, and click Create access key.)
+
 Why should you never hardcode Access Keys in code or commit them to Git?
 > Exposes your keys to the public, this compromises your account as other people with this key can access your aws. Even in private repos, keys can leak through history, forks, or accidental public switches. Use roles or environment variables instead.
 
