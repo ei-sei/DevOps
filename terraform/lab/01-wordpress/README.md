@@ -8,7 +8,7 @@ Your setup should include:
 
 - EC2 instance running WordPress
 - Security groups
-- User data or cloud-init to install dependencies
+- User data to install dependencies
 - A working public endpoint
 - All resources provisioned via Terraform
 
@@ -33,6 +33,7 @@ This lab shows you how Terraform manages real infrastructure end-to-end.
 mkdir my-terraform-wordpress-project
 cd my-terraform-wordpress-project
 ```
+
 ---
 
 ## Step 2 - Specify providers
@@ -53,6 +54,7 @@ provider "aws" {
   region = var.aws_region
 }
 ```
+
 ---
 
 ## Step 3 - Define variables
@@ -89,10 +91,10 @@ environment   = "dev"
 
 ---
 
-## Step 5 - Create script
+## Step 5 - User Data
 
 `touch user_data.sh`
-```sh
+```bash
 #!/bin/bash
 apt-get update -y
 apt-get install -y apache2 mariadb-server php php-mysql libapache2-mod-php wget
@@ -177,29 +179,26 @@ output "wordpress_url" {
   description = "URL to open in your browser to finish WordPress setup"
   value       = "http://${aws_instance.my_ec2.public_ip}"
 }
-
 ```
-
 
 ---
 
 ## Step 8 - Workflow
 
-- Initialise terraform - `terraform init`
-
+### Initialise Terraform - `terraform init`
+  
 ![init](../../assets/lab01/terraform_init.png)
 
-- Review configuration - `terraform plan`
+### Review configuration - `terraform plan`
 
 ![plan](../../assets/lab01/terraform_plan.png)
 
-- Apply config - `terraform apply` - confirm `yes`
+### Apply config - `terraform apply` - confirm `yes`
 
 ![apply](../../assets/lab01/terraform_apply.png)
 
 ![test](../../assets/lab01/test.png)
 
-
-- Delete all - `terraform destroy` - confirm `yes`
+### Delete all - `terraform destroy` - confirm `yes`
 
 ![destroy](../../assets/lab01/terraform_destroy.png)
