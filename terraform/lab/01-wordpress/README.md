@@ -162,7 +162,7 @@ resource "aws_subnet" "my_subnet" {
   availability_zone       = var.availability_zone
   map_public_ip_on_launch = true
   tags = {
-    Name        = "lab01_subnet"
+    Name        = "lab01-subnet"
     Environment = var.environment
   }
 }
@@ -248,13 +248,6 @@ output "wordpress_url" {
 ---
 
 ### Step 8 - Workflow
-
-```bash
-terraform init
-terraform plan
-terraform apply
-terraform destroy
-```
 
 `terraform init`
   
