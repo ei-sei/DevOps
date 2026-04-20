@@ -4,10 +4,16 @@ variable "aws_region" {
 }
 
 variable "instance_type" {
-    type = string
+  type = string
 }
 
 variable "environment" {
   type        = string
   description = "Deployment environment (dev, staging, prod)"
+}
+
+variable "availability_zone" {
+  type        = string
+  description = "The availability zone the subnet is associated to"
+
 }
