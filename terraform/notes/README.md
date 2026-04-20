@@ -17,6 +17,7 @@
     - [Variable Hierarchy](#variable-hierarchy)
     - [Variable Types](#variable-types)
   - [Data Sources](#data-sources)
+  - [Modules](#modules)
 
 ---
 
@@ -212,5 +213,53 @@ Reference with `data.<type>.<local_name>.<attribute>`:
 resource "aws_instance" "my_ec2" {
   ami           = data.aws_ami.amazon_linux.id  # looks up AMI per region automatically
   instance_type = "t3.micro"
+}
+```
+
+---
+
+## [Modules](https://developer.hashicorp.com/terraform/language/modules)
+
+A module is a reusable group of resources packaged together - like a function for infrastructure. Instead of copying the same EC2 + security group + networking config across multiple projects, you write it once as a module and call it wherever you need it.
+
+### Module Syntax
+
+```hcl
+module "web_server" {
+  source        = "./modules/web-server"  # path to the module
+  instance_type = "t3.micro"
+  environment   = "dev"
+}
+```
+
+### Module Structure
+
+```
+modules/
+  web-server/
+    main.tf       # resources
+    variables.tf  # inputs the module accepts
+    outputs.tf    # values the module exposes
+```
+
+### Using Public Modules
+
+The [Terraform Registry](https://registry.terraform.io/browse/modules) has pre-built modules you can use directly:
+
+```hcl
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "~> 5.0"
+
+  name = "my-vpc"
+  cidr = "10.0.0.0/16"
+}
+```
+
+Reference a module's outputs with `module.<name>.<output>`:
+
+```hcl
+resource "aws_instance" "my_ec2" {
+  subnet_id = module.vpc.public_subnets[0]
 }
 ```
