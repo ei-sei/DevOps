@@ -39,6 +39,8 @@ mkdir my-terraform-wordpress-project
 cd my-terraform-wordpress-project
 ```
 
+> Terraform treats each directory as a separate project. All `.tf` files inside are loaded together when you run `terraform init`.
+
 ---
 
 ### Step 2 - Providers
@@ -59,6 +61,8 @@ provider "aws" {
   region = var.aws_region
 }
 ```
+
+> `required_providers` tells Terraform which plugin to download and which version to use. The `provider` block configures it - here we set the AWS region using a variable so it's not hardcoded.
 
 ---
 
@@ -88,6 +92,8 @@ variable "availability_zone" {
 }
 ```
 
+> Variables declare what inputs your configuration accepts. They have no values here - that comes from `terraform.tfvars`. Keeping declarations and values separate means you can change values without touching your configuration.
+
 ---
 
 ### Step 4 - Assign values to variables
@@ -100,6 +106,8 @@ instance_type     = "t3.micro"
 environment       = "dev"
 availability_zone = "eu-west-2a"
 ```
+
+> Terraform automatically loads `terraform.tfvars` and assigns these values to the matching variables. This is where environment-specific values live - you could have a `prod.tfvars` with different values and apply it with `terraform apply -var-file="prod.tfvars"`.
 
 ---
 
@@ -127,6 +135,8 @@ rm /var/www/html/index.html
 cp -r wordpress/* /var/www/html/
 chown -R www-data:www-data /var/www/html
 ```
+
+> User data is a shell script that runs once when the EC2 instance first boots. AWS passes it to the instance via metadata. It installs Apache, MariaDB, PHP, and WordPress automatically so the instance is ready without any manual SSH.
 
 ---
 
@@ -222,6 +232,8 @@ resource "aws_instance" "my_ec2" {
 }
 ```
 
+> Resources are the actual AWS infrastructure Terraform creates. Each resource has a type (`aws_instance`), a local name (`my_ec2`), and arguments. Terraform figures out the dependency order automatically - it knows to create the VPC before the subnet because the subnet references `aws_vpc.my_vpc.id`.
+
 ---
 
 ### Step 7 - Outputs
@@ -245,6 +257,8 @@ output "wordpress_url" {
 }
 ```
 
+> Outputs print values after `terraform apply` completes. They also expose values to other configurations if this were used as a module. Without outputs you would have to log into the AWS console to find the IP.
+
 ---
 
 ### Step 8 - Workflow
@@ -253,11 +267,15 @@ output "wordpress_url" {
   
 ![init](../../assets/lab01/terraform_init.png)
 
+> Downloads the AWS provider plugin and sets up the `.terraform` directory. Must be run once before anything else, and again any time you add a new provider or module.
+
 ---
 
 `terraform plan`
 
 ![plan](../../assets/lab01/terraform_plan.png)
+
+> Shows a preview of what Terraform will create, change, or destroy - without making any changes. Always review the plan before applying. Resources marked `+` will be created.
 
 ---
 
@@ -267,11 +285,15 @@ output "wordpress_url" {
 
 ![test](../../assets/lab01/test.png)
 
+> Creates all resources in the correct order and writes the resulting state to `terraform.tfstate`. Once complete, outputs are printed - copy the `wordpress_url` and open it in your browser.
+
 ---
 
 `terraform destroy` - confirm `yes`
 
 ![destroy](../../assets/lab01/terraform_destroy.png)
+
+> Destroys all resources tracked in the state file. Always destroy lab infrastructure when you are done to avoid unexpected AWS charges.
 
 ---
 
@@ -283,6 +305,8 @@ output "wordpress_url" {
 mkdir -p modules/vpc
 mkdir -p modules/ec2
 ```
+
+> Each module is a directory containing its own `.tf` files. Terraform treats them as isolated units - they can only access values you explicitly pass in as variables.
 
 ---
 
@@ -313,6 +337,8 @@ variable "environment" {
   description = "Deployment environment"
 }
 ```
+
+> These are the inputs the VPC module requires. The CIDRs are now variables instead of hardcoded values, making the module reusable across environments.
 
 #### 2.2 - modules/vpc/main.tf
 
@@ -368,6 +394,8 @@ resource "aws_route_table_association" "my_rta" {
 }
 ```
 
+> All networking resources live here. The route table and association are what give the subnet internet access - without them the EC2 instance would have no route out to the internet even with an IGW attached.
+
 #### 2.3 - modules/vpc/outputs.tf
 
 `touch modules/vpc/outputs.tf`
@@ -383,6 +411,8 @@ output "subnet_id" {
   value = aws_subnet.my_subnet.id
 }
 ```
+
+> Outputs are how a module exposes values to the outside world. Without these, the root `main.tf` would have no way to get the `vpc_id` and `subnet_id` to pass into the EC2 module.
 
 ---
 
@@ -420,6 +450,8 @@ variable "user_data" {
   default     = null
 }
 ```
+
+> `vpc_id` and `subnet_id` are required inputs because this module cannot reach into the VPC module directly - modules are isolated. They must be passed in from the root. `user_data` has a default of `null` making it optional.
 
 #### 3.2 - modules/ec2/main.tf
 
@@ -462,6 +494,8 @@ resource "aws_instance" "my_ec2" {
 }
 ```
 
+> Notice `vpc_id` and `subnet_id` are now `var.vpc_id` and `var.subnet_id` - not direct resource references. The security group and instance both live in this module, so the SG can still be referenced directly as `aws_security_group.my_sg.id`.
+
 #### 3.3 - modules/ec2/outputs.tf
 
 `touch modules/ec2/outputs.tf`
@@ -475,6 +509,8 @@ output "public_dns" {
   value = aws_instance.my_ec2.public_dns
 }
 ```
+
+> These expose the instance's IP and DNS so the root `outputs.tf` can surface them to the user after apply.
 
 ---
 
@@ -517,6 +553,8 @@ variable "subnet_cidr" {
 }
 ```
 
+> `vpc_cidr` and `subnet_cidr` are new - they were hardcoded in the flat version but are now variables so the VPC module can receive them.
+
 #### 4.2 - Update terraform.tfvars
 
 ```hcl
@@ -527,6 +565,8 @@ availability_zone = "eu-west-2a"
 vpc_cidr          = "10.0.0.0/16"
 subnet_cidr       = "10.0.1.0/24"
 ```
+
+> Add the two new CIDR values. These get passed through root variables into the VPC module.
 
 #### 4.3 - Update main.tf
 
@@ -551,8 +591,9 @@ module "compute" {
 }
 ```
 
-> `user_data` is not in `variables.tf` or `terraform.tfvars` because we pass the script content directly using `file()`. It reads `user_data.sh` at plan time and passes the contents as a string into the module. No root variable needed.
+> The root `main.tf` is now just wiring - no resources, only module calls. `module.networking.vpc_id` is how you read an output from another module. The root is the only place that can pass values between modules.
 
+> `user_data` is not in `variables.tf` or `terraform.tfvars` because we pass the script content directly using `file()`. It reads `user_data.sh` at plan time and passes the contents as a string into the module. No root variable needed.
 
 #### 4.4 - Update outputs.tf
 
@@ -575,6 +616,8 @@ output "wordpress_url" {
 }
 ```
 
+> Outputs now reference `module.compute.*` instead of `aws_instance.my_ec2.*` directly. The resource no longer exists in the root - it lives inside the EC2 module, so you access it through the module's outputs.
+
 ---
 
 ### Step 5 - Validate and apply
@@ -585,4 +628,6 @@ terraform validate
 terraform plan
 terraform apply
 ```
+
+> `terraform init` must be re-run when you add modules so Terraform registers the new module paths. `terraform validate` checks for syntax and reference errors without contacting AWS - run this first to catch mistakes early.
 
