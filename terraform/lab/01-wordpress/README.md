@@ -457,7 +457,24 @@ variable "user_data" {
 
 `touch modules/ec2/main.tf`
 
+Instead of hardcoding an AMI ID, use a data source to look it up dynamically. Hardcoded AMI IDs are region-specific and go stale as AWS releases new images.
+
 ```hcl
+data "aws_ami" "ubuntu" {
+  most_recent = true
+  owners      = ["099720109477"]
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+}
+
 resource "aws_security_group" "my_sg" {
   vpc_id = var.vpc_id
   ingress {
@@ -481,7 +498,7 @@ resource "aws_security_group" "my_sg" {
 }
 
 resource "aws_instance" "my_ec2" {
-  ami                    = "ami-052c9005e24cd7236"
+  ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.instance_type
   subnet_id              = var.subnet_id
   vpc_security_group_ids = [aws_security_group.my_sg.id]
@@ -494,7 +511,9 @@ resource "aws_instance" "my_ec2" {
 }
 ```
 
-> Notice `vpc_id` and `subnet_id` are now `var.vpc_id` and `var.subnet_id` - not direct resource references. The security group and instance both live in this module, so the SG can still be referenced directly as `aws_security_group.my_sg.id`.
+> The data block queries AWS at plan time and returns the most recent Ubuntu 22.04 AMI matching the filters. `owners = ["099720109477"]` is Canonical's AWS account ID - this ensures you only get official Ubuntu images. The result is referenced as `data.aws_ami.ubuntu.id` using the pattern `data.<type>.<name>.<attribute>`.
+>
+> `vpc_id` and `subnet_id` use `var.` because they come from the VPC module via the root. The security group can be referenced directly as `aws_security_group.my_sg.id` because it lives in the same module.
 
 #### 3.3 - modules/ec2/outputs.tf
 
@@ -516,7 +535,7 @@ output "public_dns" {
 
 ### Step 4 - Update root configuration
 
-The root files now only wire modules together - no resources live here anymore.
+The root files now only wire modules together - no resources live here any more.
 
 #### 4.1 - Update variables.tf
 
@@ -629,5 +648,5 @@ terraform plan
 terraform apply
 ```
 
-> `terraform init` must be re-run when you add modules so Terraform registers the new module paths. `terraform validate` checks for syntax and reference errors without contacting AWS - run this first to catch mistakes early.
+> `terraform init` must be re-run when you add modules, so Terraform registers the new module paths. `terraform validate` checks for syntax and reference errors without contacting AWS - run this first to catch mistakes early.
 
