@@ -27,14 +27,20 @@ This repository uses a branch-based organisation instead of subdirectories. Each
 
 | Branch | Description |
 |--------|-------------|
-| [`aws`](../../tree/aws) | AWS labs covering VPC, ALB, S3, CloudFront, Route53, Lambda, API Gateway, DynamoDB, and IAM |
+| [`aws`](../../tree/aws) | AWS fundamentals and labs covering VPC, ALB, S3, CloudFront, Route53, Lambda, API Gateway, DynamoDB, and IAM |
 
+### Infrastructure as Code
+
+| Branch | Description |
+|--------|-------------|
+| [`terraform`](../../tree/terraform) | Terraform fundamentals and labs, deploying AWS resources as code |
 
 
 ## Technologies
 
 - **Cloud:** AWS (EC2, VPC, ALB, S3, CloudFront, Lambda, API Gateway, DynamoDB, IAM)
 - **Containers:** Docker
-- **DNS:** Cloudflare, Route53
+- **IaC:** Terraform
 - **CI/CD:** GitHub Actions
+- **DNS:** Cloudflare, Route53
 - **Scripting:** Bash
