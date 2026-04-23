@@ -28,6 +28,8 @@ Your setup should include:
 - EC2 instance running NGINX via cloud-init
 - Modular structure: `modules/vpc` and `modules/ec2`
 
+![architecture](../../assets/lab02/architecture.png)
+
 ---
 
 ## Step 1 - Create the project folder and module structure
@@ -389,3 +391,27 @@ terraform plan
 terraform apply
 terraform destroy
 ```
+
+`terraform init`
+
+![init](../../assets/lab02/terraform-init.png)
+
+`terraform validate`
+
+![validate](../../assets/lab02/terraform-validate.png)
+
+`terraform plan`
+
+![plan](../../assets/lab02/terraform-plan.png)
+
+`terraform apply`
+
+![apply](../../assets/lab02/terraform-apply.png)
+
+**test**
+
+![test](../../assets/lab02/test.png)
+
+`terraform destroy`
+
+![destroy](../../assets/lab02/terraform-destroy.png)
