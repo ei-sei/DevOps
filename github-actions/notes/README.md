@@ -10,7 +10,8 @@
 6. [Runners](#runners)
 7. [Contexts and Expressions](#contexts-and-expressions)
 8. [Secrets and Variables](#secrets-and-variables)
-9. [Common Patterns](#common-patterns)
+9. [Matrix Strategy](#matrix-strategy)
+10. [Common Patterns](#common-patterns)
 
 ---
 
@@ -177,6 +178,54 @@ steps:
 > Never hardcode credentials. Secrets are masked in logs - if a secret appears in output, GitHub replaces it with `***`.
 
 Variables (non-sensitive) can be set at repo or environment level and accessed via `${{ vars.MY_VAR }}`.
+
+---
+
+## Matrix Strategy
+
+A matrix runs the same job multiple times with different variable combinations. Useful for testing across multiple versions or environments in parallel.
+
+```yaml
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.10, 3.11, 3.12]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - run: python --version
+```
+
+> This creates 3 parallel jobs - one for each Python version. Each job runs independently and you can see all results in the Actions tab.
+
+You can combine multiple dimensions:
+
+```yaml
+strategy:
+  matrix:
+    os: [ubuntu-latest, windows-latest]
+    python-version: [3.11, 3.12]
+```
+
+> This produces 4 jobs (2 OS x 2 versions), all running in parallel.
+
+Use `fail-fast: false` to let all jobs finish even if one fails:
+
+```yaml
+strategy:
+  fail-fast: false
+  matrix:
+    python-version: [3.10, 3.11, 3.12]
+```
+
+> By default `fail-fast` is `true` - if one matrix job fails, GitHub cancels the rest. Setting it to `false` lets you see results from all combinations.
 
 ---
 
