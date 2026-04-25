@@ -27,11 +27,6 @@ A multi-container web application built with Flask, Redis, and nginx, fully cont
 
 ---
 
-## Environment
-
-- **Local:** Fedora 43 (KDE Plasma)
-- **Remote:** GitHub, Docker Hub
-
 ## Repository Structure
 
 ```
