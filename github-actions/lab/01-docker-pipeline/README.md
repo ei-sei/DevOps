@@ -118,3 +118,64 @@ jobs:
           push: true
           tags: ${{ vars.DOCKERHUB_USERNAME }}/lab01-pipeline:latest
 ```
+
+## Step 4: Add tests to workflow
+
+Add a tests job - here you will install the dependencies flake8 (PyTest is already installed by default) for testing and linting
+
+```yml
+name: docker workflow
+
+on:
+  push:
+    branches: [ github-actions ]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: install dependencies
+        working-directory: lab/01-docker-pipeline/app
+        run: |
+          pip install --upgrade pip
+          pip install flake8
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: pytest
+
+      - name: Run linter
+        run: flake8 lab/01-docker-pipeline/app
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: tests
+    steps:
+
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Create and boot a builder using by default the docker-container driver (recommended)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      # GitHub Action to build and push Docker images with Buildx
+      - name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: lab/01-docker-pipeline/app # Context tells Docker where to find the Dockerfile and which files are available to COPY
+
+          push: true
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/lab01-pipeline:latest
+
+```
