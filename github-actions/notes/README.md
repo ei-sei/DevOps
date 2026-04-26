@@ -11,7 +11,8 @@
 7. [Contexts and Expressions](#contexts-and-expressions)
 8. [Secrets and Variables](#secrets-and-variables)
 9. [Matrix Strategy](#matrix-strategy)
-10. [Common Patterns](#common-patterns)
+10. [Marketplace Actions](#marketplace-actions)
+11. [Common Patterns](#common-patterns)
 
 ---
 
@@ -226,6 +227,76 @@ strategy:
 ```
 
 > By default `fail-fast` is `true` - if one matrix job fails, GitHub cancels the rest. Setting it to `false` lets you see results from all combinations.
+
+---
+
+## Marketplace Actions
+
+The [GitHub Actions Marketplace](https://github.com/marketplace?type=actions) is a library of pre-built actions maintained by GitHub, companies, and the community. Instead of writing shell commands for common tasks, you use a pre-built action with `uses`.
+
+### Syntax
+
+```yaml
+uses: <owner>/<repo>@<version>
+```
+
+- `owner` - the GitHub user or org that maintains the action
+- `repo` - the action's repository name
+- `version` - a tag, branch, or commit SHA. Always pin to a version tag (e.g. `@v4`) not `@main`
+
+### Finding actions
+
+1. Go to [github.com/marketplace](https://github.com/marketplace?type=actions)
+2. Search for what you need (e.g. "docker login", "setup python")
+3. Open the action - the README shows all available inputs and example usage
+4. The action name in the URL tells you the `uses` value - e.g. `docker/login-action` → `uses: docker/login-action@v4`
+
+### Common actions
+
+| Action | Use case |
+|--------|----------|
+| `actions/checkout@v4` | Clone repo onto the runner |
+| `actions/setup-python@v5` | Install a specific Python version |
+| `actions/cache@v4` | Cache dependencies between runs |
+| `actions/upload-artifact@v4` | Save build output for later jobs |
+| `docker/login-action@v4` | Login to DockerHub or other registries |
+| `docker/build-push-action@v6` | Build and push Docker images |
+| `hashicorp/setup-terraform@v3` | Install Terraform on the runner |
+| `aws-actions/configure-aws-credentials@v4` | Configure AWS credentials from secrets |
+
+### Example - setup Python and run tests
+
+```yaml
+steps:
+  - uses: actions/checkout@v4
+
+  - uses: actions/setup-python@v5
+    with:
+      python-version: "3.11"
+
+  - run: pip install pytest
+  - run: pytest
+```
+
+### Passing inputs
+
+Actions accept inputs via the `with` block. Check the action's README for what inputs are available:
+
+```yaml
+- uses: actions/setup-python@v5
+  with:
+    python-version: "3.11"    # required input
+    cache: "pip"              # optional - caches pip dependencies
+```
+
+### Pinning versions
+
+Always pin to a specific version tag - never use `@main` or `@master` in production. An unpinned action can change without warning and break your workflow:
+
+```yaml
+uses: actions/checkout@v4       # good - pinned to major version
+uses: actions/checkout@main     # bad - changes whenever main changes
+```
 
 ---
 
