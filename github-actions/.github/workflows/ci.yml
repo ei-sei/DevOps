@@ -16,14 +16,14 @@ jobs:
         working-directory: lab/01-docker-pipeline/app
         run: |
           pip install --upgrade pip
-          pip install flake8 pytest
+          pip install ruff pytest
           pip install -r requirements.txt
 
       - name: Run tests
         run: pytest
 
       - name: Run linter
-        run: flake8 lab/01-docker-pipeline/app
+        run: ruff check lab/01-docker-pipeline/app
 
   docker:
     runs-on: ubuntu-latest
