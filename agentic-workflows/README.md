@@ -39,8 +39,7 @@ This repository uses a branch-based organisation instead of subdirectories. Each
 
 | Branch                                        | Description                                                                                                         |
 | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| [`github actions`](../../tree/github-actions) | GitHub Actions workflows covering CI/CD pipelines, Docker image builds, testing, linting, and automated deployments |
-|                                               |
+| [`github-actions`](../../tree/github-actions) | GitHub Actions workflows covering CI/CD pipelines, Docker image builds, testing, linting, and automated deployments |
 
 
 ## Technologies
