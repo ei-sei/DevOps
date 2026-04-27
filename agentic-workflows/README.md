@@ -8,39 +8,16 @@ This repository uses a branch-based organisation instead of subdirectories. Each
 
 ## Projects
 
-### Foundations
-
-| Branch                                                | Description                                                            |
-| ----------------------------------------------------- | ---------------------------------------------------------------------- |
-| [`linux`](../../tree/linux)                           | Linux administration notes, commands, and lab exercises                |
-| [`git`](../../tree/git)                               | Operational runbooks and troubleshooting guides                        |
-| [`automation-scripts`](../../tree/automation-scripts) | Shell scripts and automation utilities                                 |
-| [`networking`](../../tree/networking)                 | Networking fundamentals, DNS lab, and Nginx on EC2 with Cloudflare DNS |
-
-### Containerisation
-
-| Branch                        | Description                                            |
-| ----------------------------- | ------------------------------------------------------ |
-| [`docker`](../../tree/docker) | Docker fundamentals, Dockerfiles, and compose examples |
-
-### Cloud
-
-| Branch                  | Description                                                                                                  |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------ |
-| [`aws`](../../tree/aws) | AWS fundamentals and labs covering VPC, ALB, S3, CloudFront, Route53, Lambda, API Gateway, DynamoDB, and IAM |
-
-### Infrastructure as Code
-
-| Branch                              | Description                                                      |
-| ----------------------------------- | ---------------------------------------------------------------- |
-| [`terraform`](../../tree/terraform) | Terraform fundamentals and labs, deploying AWS resources as code |
-
-### CI/CD
-
-| Branch                                        | Description                                                                                                         |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| [`github-actions`](../../tree/github-actions) | GitHub Actions workflows covering CI/CD pipelines, Docker image builds, testing, linting, and automated deployments |
-
+| Branch | Category | Description |
+|--------|----------|-------------|
+| [`linux`](../../tree/linux) | Foundations | Linux administration notes, commands, and lab exercises |
+| [`git`](../../tree/git) | Foundations | Operational runbooks and troubleshooting guides |
+| [`automation-scripts`](../../tree/automation-scripts) | Foundations | Shell scripts and automation utilities |
+| [`networking`](../../tree/networking) | Foundations | Networking fundamentals, DNS lab, and Nginx on EC2 with Cloudflare DNS |
+| [`docker`](../../tree/docker) | Containerisation | Docker fundamentals, Dockerfiles, and compose examples |
+| [`aws`](../../tree/aws) | Cloud | AWS fundamentals and labs covering VPC, ALB, S3, CloudFront, Route53, Lambda, API Gateway, DynamoDB, and IAM |
+| [`terraform`](../../tree/terraform) | IaC | Terraform fundamentals and labs, deploying AWS resources as code |
+| [`github-actions`](../../tree/github-actions) | CI/CD | GitHub Actions workflows covering CI/CD pipelines, Docker image builds, testing, linting, and automated deployments |
 
 ## Technologies
 
