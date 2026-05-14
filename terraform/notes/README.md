@@ -18,6 +18,9 @@
     - [Variable Types](#variable-types)
   - [Data Sources](#data-sources)
   - [Modules](#modules)
+    - [Module Syntax](#module-syntax)
+    - [Module Structure](#module-structure)
+    - [Using Public Modules](#using-public-modules)
 
 ---
 
@@ -222,9 +225,12 @@ resource "aws_instance" "my_ec2" {
 
 A module is a reusable group of resources packaged together - like a function for infrastructure. Instead of copying the same EC2 + security group + networking config across multiple projects, you write it once as a module and call it wherever you need it.
 
+![modules](../assets/modules.png)
+
 ### Module Syntax
 
 ```hcl
+# root main.tf
 module "web_server" {
   source        = "./modules/web-server"  # path to the module
   instance_type = "t3.micro"
@@ -232,11 +238,13 @@ module "web_server" {
 }
 ```
 
+> adding any new source (local or registry) requires re-runnig `terraform init` before `terraform plan`/`apply`
+
 ### Module Structure
 
 ```
 modules/
-  web-server/
+  vpc/
     main.tf       # resources
     variables.tf  # inputs the module accepts
     outputs.tf    # values the module exposes
