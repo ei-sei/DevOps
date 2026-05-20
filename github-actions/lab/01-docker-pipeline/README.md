@@ -1,4 +1,14 @@
-Objective:
+## Contents
+
+1. [Objective](#objective)
+2. [Step 1 - Build a simple Python application](#step-1-build-a-simple-python-application)
+3. [Step 2 - Docker](#step-2-docker)
+4. [Step 3 - Build the workflow](#step-3-build-the-workflow)
+5. [Step 4 - Add tests to workflow](#step-4-add-tests-to-workflow)
+
+---
+
+## Objective
 
 - Set up a pipeline that builds and pushes a certain container image to a Docker Hub or ECS registry. 
 
