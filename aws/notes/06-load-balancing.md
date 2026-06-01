@@ -1,495 +1,347 @@
 # 6. Load Balancing & Scalability
 
-> Answer from memory after watching videos. Mark `???` for gaps, then go back and fill them.
-
 ---
 
 ## Part 1: Why Load Balancing Exists
 
-What is the problem with running your application on a single server?
-> 
+A single server is a single point of failure - if it crashes, your app goes down, and it cannot scale beyond its hardware limits.
 
-What is vertical scaling? What is its limitation?
-> 
+**Vertical scaling** (what this means: adding more CPU/RAM to the same machine) hits a hard ceiling because hardware has a maximum size, and it requires downtime.
 
-What is horizontal scaling?
-> 
+**Horizontal scaling** (what this means: adding more servers to share the load) has no practical ceiling and requires no downtime.
 
-What does "high availability" mean?
-> 
+**High availability** (what this means: your application stays up even if individual components fail, achieved by running across multiple AZs) means no single failure takes down the whole system.
 
-What does a load balancer do?
-> 
+A **load balancer** (what this means: a proxy that sits in front of your servers and distributes incoming requests across them) routes traffic, performs health checks, and exposes a single DNS endpoint to users.
 
-Where does a load balancer sit in relation to users and servers?
-> 
+The load balancer sits between the internet and your backend servers - users connect to it, and it forwards requests to healthy instances.
 
-Why use AWS Elastic Load Balancing instead of running your own (e.g., nginx on EC2)?
-> 
+AWS **Elastic Load Balancing** (what this means: a managed load balancer service where AWS handles provisioning, patching, capacity, and failover) saves you from running and maintaining your own on EC2.
 
 ---
 
 ## Part 2: Load Balancer Types
 
-What are the three types of Elastic Load Balancer on AWS?
-> 
+AWS offers three ELB types: **Application Load Balancer (ALB)**, **Network Load Balancer (NLB)**, and **Gateway Load Balancer (GLB)**.
 
-What OSI layer does ALB operate at? What does that mean in practice?
-> 
+**ALB** (what this means: operates at OSI Layer 7 - the application layer, meaning it can read HTTP headers, paths, and hostnames to make routing decisions) suits web apps and microservices.
 
-What OSI layer does NLB operate at? What does that mean in practice?
-> 
+**NLB** (what this means: operates at OSI Layer 4 - the transport layer, meaning it routes by IP and TCP/UDP port without inspecting the request content) handles extreme throughput and low latency.
 
-What OSI layer does GLB operate at? What is it used for?
-> 
+**GLB** (what this means: operates at OSI Layer 3 - the network layer, used to route traffic through third-party virtual appliances like firewalls and intrusion detection systems) is for security inspection, not general application traffic.
 
-Why is NLB faster than ALB?
-> 
+NLB is faster than ALB because it skips HTTP parsing and routes at the packet level with no content inspection overhead.
 
-ALB has dynamic IPs. NLB has static IPs. Why does this matter?
-> 
+ALB has dynamic IPs that change, so you must reference it by DNS name. NLB has static IPs (one per AZ), which matters when firewalls need a fixed IP to allowlist.
 
-NLB preserves the client's source IP address. Why is this useful?
-> 
+NLB passes the original client IP to your backend, which is useful for logging, geolocation, and IP-based access control.
 
-Can ALB do path-based routing? Can NLB?
-> 
+ALB supports path-based and host-based routing. NLB does not - it routes only by port.
 
-When would you choose ALB over NLB?
-> 
+Choose ALB for HTTP/HTTPS web apps, microservices, or anything needing content-based routing. Choose NLB for TCP/UDP workloads, gaming, IoT, or when you need static IPs or ultra-low latency.
 
-When would you choose NLB over ALB?
-> 
-
-Can you put an ALB behind an NLB? Why would you do this?
-> 
+You can put an ALB behind an NLB to get static IPs for allowlisting while still using ALB's content-based routing.
 
 ---
 
-## Part 3: How ALB Works, Listeners
+## Part 3: How ALB Works - Listeners
 
-What is a listener?
-> 
+A **listener** (what this means: a process on the ALB that checks for incoming connections on a specified protocol and port) is the entry point for traffic.
 
-What two things do you configure on a listener?
-> 
+You configure the protocol (HTTP or HTTPS) and the port (e.g., 80 or 443) on each listener.
 
-Can an ALB have multiple listeners? Give an example.
-> 
+Yes, an ALB can have multiple listeners - for example, one on port 80 for HTTP and one on port 443 for HTTPS.
 
-What is the default action on a listener?
-> 
+The **default action** (what this means: the fallback action taken when no listener rule matches the request) is typically to forward to a default target group or return a fixed response.
 
 ---
 
-## Part 4: How ALB Works, Listener Rules
+## Part 4: How ALB Works - Listener Rules
 
-What is a listener rule?
-> 
+A **listener rule** (what this means: a condition-action pair that tells the ALB how to route a request matching specific criteria) lets you route different requests to different targets.
 
-What two parts does a rule have?
-> 
+Each rule has a **condition** (when to apply it) and an **action** (what to do - forward, redirect, return a fixed response, or authenticate).
 
-What conditions can you use in a rule?
-> 
+Conditions can match on: URL path, host header, HTTP method, query string, source IP, or HTTP headers.
 
-What actions can a rule take?
-> 
+Actions include: forward to a target group, redirect (e.g., HTTP to HTTPS), return a fixed response, or authenticate via Cognito/OIDC.
 
-In what order are rules evaluated?
-> 
+Rules are evaluated in priority order (lowest number first); the default rule at the end acts as a catch-all.
 
-What happens if no rule matches a request?
-> 
+If no rule matches, the default rule applies - usually forwarding to a default target group or returning a 404.
 
-Give an example: route /api/* to one place and /images/* to another.
-> 
+Path routing example: a rule with condition `path is /api/*` forwards to the API target group; a rule with condition `path is /images/*` forwards to the images target group.
 
-Give an example of host-based routing.
-> 
+Host routing example: requests with host header `app1.example.com` go to target group A; requests with `app2.example.com` go to target group B.
 
 ---
 
 ## Part 5: Target Groups
 
-What is a target group?
-> 
+A **target group** (what this means: a logical group of backend resources that receive forwarded traffic from a listener rule, with their own health check configuration) is the destination in a routing rule.
 
-What target types can a target group contain?
-> 
+Target types: **EC2 instances** (by instance ID), **IP addresses** (including on-premises servers), or **Lambda functions**.
 
-Can a single ALB route to multiple target groups?
-> 
+Yes, a single ALB can route to multiple target groups via different listener rules.
 
-Can an instance be in multiple target groups?
-> 
+Yes, an instance can belong to multiple target groups simultaneously.
 
-When would you use the "IP" target type?
-> 
+Use the IP target type when routing to containers in ECS (where the container IP matters, not the host instance), on-premises servers, or any endpoint not managed as an EC2 instance.
 
-When would you use the "Lambda" target type?
-> 
+Use the Lambda target type to invoke a serverless function directly from the ALB without an API Gateway.
 
 ---
 
 ## Part 6: Health Checks
 
-What is a health check?
-> 
+A **health check** (what this means: periodic requests the ALB sends to each target to verify it can serve traffic before routing real requests to it) runs continuously in the background.
 
-What settings can you configure on a health check?
-> 
+Configurable settings include: protocol, path (for HTTP), port, healthy threshold, unhealthy threshold, timeout, and interval.
 
-What is the healthy threshold?
-> 
+The **healthy threshold** (what this means: the number of consecutive successful checks required before a target is marked healthy and receives traffic) is typically 2-3.
 
-What is the unhealthy threshold?
-> 
+The **unhealthy threshold** (what this means: the number of consecutive failed checks required before a target is marked unhealthy and removed from rotation) is typically 2-3.
 
-A target fails its health check. What happens step by step?
-> 
+When a target fails its health check: the ALB marks it unhealthy, stops sending new requests to it, and the remaining healthy targets absorb the traffic until the failing target recovers or is replaced.
 
-What is deregistration delay (connection draining)?
-> 
+**Deregistration delay** (what this means: a waiting period after a target is deregistered during which the ALB finishes in-flight requests before fully removing the target) defaults to 300 seconds.
 
-Why does connection draining matter during deployments?
-> 
+During deployments, connection draining ensures users mid-request are not abruptly disconnected when you replace instances with a new version.
 
-Your health check path is `/health` but your app only responds on `/`. What happens?
-> 
+If your health check path is `/health` but the app only responds on `/`, the health check receives a 404, the target is marked unhealthy, and the ALB stops sending traffic to it even though the app is working fine.
 
 ---
 
 ## Part 7: SSL/TLS on Load Balancers
 
-What is SSL/TLS termination?
-> 
+**SSL/TLS termination** (what this means: the load balancer decrypts HTTPS traffic from the client, then communicates with backends over plain HTTP, so your app servers never handle encryption) offloads the CPU cost of encryption.
 
-Why terminate SSL at the load balancer instead of at each backend instance?
-> 
+Terminating at the load balancer means your backend instances do not need certificates or encryption logic, reducing their CPU load and simplifying certificate management.
 
-What is ACM (AWS Certificate Manager)?
-> 
+**ACM** (what this means: AWS Certificate Manager - a service that provisions, renews, and manages SSL/TLS certificates for use with AWS services) handles renewals automatically at no cost.
 
-How do you get a free SSL certificate for your ALB?
-> 
+Request a certificate in ACM, validate domain ownership via DNS or email, then attach the certificate to your ALB's HTTPS listener.
 
-What is SNI (Server Name Indication)?
-> 
+**SNI** (what this means: Server Name Indication - a TLS extension where the client tells the server which hostname it is connecting to before the handshake completes, allowing one IP to serve multiple certificates) lets you host multiple domains on a single ALB.
 
-You host app1.example.com and app2.example.com on the same ALB with different certificates. How does the ALB know which certificate to present?
-> 
+The ALB reads the SNI hostname in the TLS handshake and selects the matching certificate for that domain.
 
-Which load balancer types support SNI?
-> 
+Both ALB and NLB support SNI.
 
-How do you redirect HTTP to HTTPS on an ALB?
-> 
+Add a listener rule on port 80 with the action "Redirect to HTTPS" - the ALB sends a 301/302 redirect to the client automatically.
 
 ---
 
 ## Part 8: Sticky Sessions
 
-What is session stickiness (session affinity)?
-> 
+**Session stickiness** (what this means: a load balancer feature that binds a user's session to one specific backend instance so all their requests go to the same server) is also called session affinity.
 
-What problem does it solve?
-> 
+It solves the problem of stateful applications that store session data locally on the server - without stickiness, a user might hit a different instance that has no record of their session.
 
-What are the two types of stickiness cookies?
-> 
+The two cookie types are: **LB-generated cookie** (the ALB creates and manages it, named `AWSALB`) and **application-based cookie** (your app creates its own cookie and the ALB uses it for routing).
 
-Why can stickiness cause uneven load distribution?
-> 
+Stickiness can overload certain instances because users are pinned to them regardless of current server load.
 
-What is a better alternative to stickiness? Where should session state live instead?
-> 
+The better alternative is to store session state in a shared, external store such as ElastiCache (Redis) or DynamoDB so any backend instance can serve any user.
 
 ---
 
 ## Part 9: Cross-Zone Load Balancing
 
-What is cross-zone load balancing?
-> 
+**Cross-zone load balancing** (what this means: each load balancer node distributes traffic evenly across all registered targets in all AZs, not just the targets in its own AZ) prevents traffic imbalances caused by unequal instance counts per AZ.
 
-Without cross-zone: AZ-A has 2 instances, AZ-B has 8 instances. Each AZ gets 50% of traffic. What is the problem?
-> 
+Without cross-zone: AZ-A's 2 instances each get 25% of traffic, AZ-B's 8 instances each get 6.25%. The AZ-A instances are overloaded.
 
-With cross-zone enabled, how is traffic distributed in the same setup?
-> 
+With cross-zone enabled: all 10 instances share traffic equally at 10% each, regardless of which AZ they are in.
 
-Is cross-zone enabled by default on ALB?
-> 
+Cross-zone load balancing is enabled by default on ALB and there is no charge for it.
 
-Is cross-zone enabled by default on NLB? Does it cost extra?
-> 
+Cross-zone is disabled by default on NLB, and enabling it incurs inter-AZ data transfer charges.
 
 ---
 
 ## Part 10: Security Group Chain for Load Balancers
 
-Does an ALB need its own security group?
-> 
+Yes, an ALB needs its own security group separate from the backend instances.
 
-What inbound rules should the ALB security group have?
-> 
+The ALB security group should allow inbound HTTP (port 80) and HTTPS (port 443) from `0.0.0.0/0` (the internet).
 
-What should the backend EC2 security group allow as its source?
-> 
+The backend EC2 security group should allow inbound traffic only from the ALB's security group ID as the source.
 
-Why should the backend reference the ALB's security group instead of allowing 0.0.0.0/0?
-> 
+Referencing the ALB security group instead of `0.0.0.0/0` means only the ALB can reach your instances - users cannot bypass the load balancer and connect directly to your EC2s.
 
 ---
 
 ## Part 11: Why Auto Scaling Exists
 
-What problem does Auto Scaling solve?
-> 
+Auto Scaling solves the problem of mismatched capacity - having too few instances during peak load or paying for idle instances during low traffic.
 
-Without Auto Scaling, your site gets a traffic spike. What happens?
-> 
+Without Auto Scaling, a traffic spike exhausts your fixed instance count, causing slow responses or downtime.
 
-Without Auto Scaling, traffic drops to near-zero at night. What are you wasting?
-> 
+Without Auto Scaling, overnight low traffic means you are paying for instances running at near-zero utilisation.
 
-What is the relationship between Auto Scaling and a load balancer?
-> 
+Auto Scaling works with a load balancer by registering new instances into the target group automatically so the load balancer can send them traffic immediately.
 
 ---
 
 ## Part 12: Launch Templates
 
-What is a Launch Template?
-> 
+A **Launch Template** (what this means: a reusable configuration that defines exactly how new EC2 instances should be created, so Auto Scaling can launch identical instances without manual input) is the blueprint for your ASG's instances.
 
-What information goes in a Launch Template?
-> 
+A Launch Template contains: AMI ID, instance type, key pair, security groups, IAM role, user data script, storage configuration, and network settings.
 
-What is the difference between a Launch Template and a Launch Configuration?
-> 
+A **Launch Configuration** (what this means: the older, deprecated predecessor to Launch Templates - same purpose but immutable and with fewer features) cannot be updated after creation. Launch Templates are versioned and can be modified.
 
-Which one should you use and why?
-> 
+Use Launch Templates - AWS recommends them, they are required for newer features like mixed instance types and Spot instance support.
 
 ---
 
 ## Part 13: Auto Scaling Groups
 
-What is an Auto Scaling Group (ASG)?
-> 
+An **Auto Scaling Group** (what this means: a group of EC2 instances managed together so AWS can automatically add or remove instances based on demand or health) is the core of Auto Scaling.
 
-What is minimum capacity?
-> 
+**Minimum capacity** (what this means: the floor - the ASG will never reduce instance count below this number) ensures your app always has baseline capacity.
 
-What is maximum capacity?
-> 
+**Maximum capacity** (what this means: the ceiling - the ASG will never exceed this instance count) controls your maximum spend.
 
-What is desired capacity?
-> 
+**Desired capacity** (what this means: the target number of instances the ASG tries to maintain at all times) is what the ASG actively works toward.
 
-Desired is 2, min is 1, max is 4. You manually terminate one instance. What happens?
-> 
+If desired is 2 and you terminate one instance manually, the ASG detects the count has dropped below desired and automatically launches a replacement to restore it to 2.
 
-How does an ASG know which subnets and AZs to launch instances in?
-> 
+You configure the ASG with a list of subnets (and therefore AZs) to launch into - the ASG distributes instances across them for high availability.
 
-How does an ASG connect to a load balancer?
-> 
+You attach an ASG to a load balancer's target group - newly launched instances register themselves automatically and deregister on termination.
 
 ---
 
 ## Part 14: ASG Health Checks
 
-What health check types can an ASG use?
-> 
+An ASG can use EC2 health checks (default) or ELB health checks.
 
-What is the difference between EC2 health checks and ELB health checks on an ASG?
-> 
+EC2 health checks only verify the instance is running (not stopped/terminated). ELB health checks use the load balancer's application-level check, which also verifies your app is responding correctly.
 
-Why should you use ELB health checks when your ASG is behind a load balancer?
-> 
+You should use ELB health checks when behind a load balancer because an instance might pass the EC2 check (it is running) while your application is crashed - ELB health checks catch this case.
 
-What is the health check grace period?
-> 
+The **health check grace period** (what this means: a delay after launch during which the ASG ignores health check failures, giving the instance time to boot and start the app before being judged unhealthy) prevents premature termination.
 
-Your instances take 90 seconds to boot. The grace period is 60 seconds. What goes wrong?
-> 
+If instances take 90 seconds to boot but the grace period is 60 seconds, the ASG evaluates health before the app is ready, marks instances unhealthy, terminates them, and enters a launch-terminate loop.
 
 ---
 
-## Part 15: Scaling Policies, Target Tracking
+## Part 15: Scaling Policies - Target Tracking
 
-What is dynamic scaling?
-> 
+**Dynamic scaling** (what this means: automatically adjusting instance count in real time in response to changing metrics like CPU usage) reacts to actual load rather than a schedule.
 
-What is the difference between scaling out and scaling in?
-> 
+**Scaling out** means adding instances; **scaling in** means removing instances.
 
-What is a target tracking scaling policy?
-> 
+A **target tracking scaling policy** (what this means: you set a target metric value and the ASG automatically adjusts instance count to keep the metric at that value, similar to a thermostat) is the simplest policy type to configure.
 
-Give an example using CPU utilisation.
-> 
+Example: set a target of 50% average CPU utilisation - if CPU rises above 50%, the ASG adds instances; if it drops below, the ASG removes them.
 
-What predefined metrics can you target track?
-> 
+Predefined metrics you can use: `ASGAverageCPUUtilization`, `ALBRequestCountPerTarget`, `ASGAverageNetworkIn`, and `ASGAverageNetworkOut`.
 
-Why is target tracking the recommended starting point?
-> 
+Target tracking is the recommended starting point because it requires no manual threshold math - you just declare the desired state and the policy manages the math for you.
 
 ---
 
-## Part 16: Scaling Policies, Step and Simple
+## Part 16: Scaling Policies - Step and Simple
 
-What is step scaling?
-> 
+**Step scaling** (what this means: a policy that scales by different amounts depending on how far the metric breaches a threshold - larger breaches trigger larger capacity changes) gives you fine-grained control over scaling behaviour.
 
-How does step scaling differ from target tracking?
-> 
+Step scaling is manually defined with specific thresholds and step sizes, unlike target tracking which calculates adjustments automatically.
 
-Give an example with multiple thresholds.
-> 
+Example: if CPU is 60-80%, add 1 instance; if CPU is 80-100%, add 3 instances; if CPU drops below 40%, remove 1 instance.
 
-What is simple scaling?
-> 
+**Simple scaling** (what this means: an older policy type that adds or removes a fixed number of instances when a single CloudWatch alarm triggers, then waits for a cooldown before acting again) is the most basic form of scaling.
 
-Why is simple scaling generally worse than step scaling?
-> 
+Simple scaling is worse than step scaling because it waits for a full cooldown after each action, making it slow to respond to rapidly changing load, and it only reacts at a single threshold.
 
 ---
 
-## Part 17: Scaling Policies, Scheduled and Predictive
+## Part 17: Scaling Policies - Scheduled and Predictive
 
-What is scheduled scaling?
-> 
+**Scheduled scaling** (what this means: pre-configured capacity changes that happen at specific times you define, independent of real-time metrics) suits predictable traffic patterns.
 
-Give a real-world example of when you would use it.
-> 
+Example: increase desired capacity to 10 every weekday at 08:00 and reduce it to 2 at 20:00 for a business application used only during office hours.
 
-What is predictive scaling?
-> 
+**Predictive scaling** (what this means: AWS analyses your historical traffic patterns with machine learning and proactively scales capacity in advance of predicted demand spikes) scales before the load arrives rather than reacting to it.
 
-How does predictive scaling know when to scale?
-> 
+Predictive scaling examines your ASG's historical metric data over the past two weeks and forecasts future load to schedule capacity changes ahead of time.
 
-Can you combine multiple scaling policy types on the same ASG?
-> 
+Yes, you can combine multiple policy types on the same ASG - for example, predictive scaling for known patterns plus target tracking as a safety net for unexpected spikes.
 
 ---
 
 ## Part 18: Cooldown Periods
 
-What is a cooldown period?
-> 
+A **cooldown period** (what this means: a pause after a scaling action during which the ASG ignores new scaling triggers, giving new instances time to start handling traffic before another change is made) prevents thrashing.
 
-What happens if you do not have one or it is too short?
-> 
+Without a cooldown (or with one too short), the ASG may launch or terminate multiple waves of instances before the first wave has started serving traffic, causing instability.
 
-What is the default cooldown period?
-> 
+The default cooldown period is 300 seconds (5 minutes).
 
-What is scale-in protection? When would you use it?
-> 
+**Scale-in protection** (what this means: a flag you can set on individual instances to prevent the ASG from terminating them during a scale-in event) is useful for instances running long-running jobs you do not want interrupted.
 
 ---
 
 ## Part 19: Instance Refresh
 
-What is ASG instance refresh?
-> 
+**ASG instance refresh** (what this means: a rolling replacement of all instances in the ASG to apply an updated Launch Template - for example, a new AMI - without taking down the whole group) automates blue/green-style deployments within a single ASG.
 
-When would you use it?
-> 
+Use it when you update your AMI (e.g., OS patch, new application version) and need to roll out the change to every running instance without manual intervention.
 
-What is the minimum healthy percentage setting?
-> 
+The **minimum healthy percentage** (what this means: the floor of healthy instances that must remain in service during the refresh - for example, 80% means the ASG replaces at most 20% of instances at a time) controls the blast radius of a bad deployment.
 
 ---
 
 ## Commands to Learn
 
 ```bash
-# What does this do?
+# Create an Application Load Balancer
 aws elbv2 create-load-balancer --name my-alb --type application \
   --subnets subnet-aaa subnet-bbb --security-groups sg-xxxxx
 ```
-> 
 
 ```bash
-# What does this do?
+# List load balancers
 aws elbv2 describe-load-balancers
 ```
-> 
 
 ```bash
-# What does this do?
+# Create a target group
 aws elbv2 create-target-group --name my-targets --protocol HTTP --port 80 \
   --vpc-id vpc-xxxxx --health-check-path /health
 ```
-> 
 
 ```bash
-# What does this do?
+# Register targets in a target group
 aws elbv2 register-targets --target-group-arn arn:aws:... \
   --targets Id=i-xxxxx Id=i-yyyyy
 ```
-> 
 
 ```bash
-# What does this do?
+# Check target health
 aws elbv2 describe-target-health --target-group-arn arn:aws:...
 ```
-> 
 
 ```bash
-# What does this do?
+# Create an Auto Scaling Group
 aws autoscaling create-auto-scaling-group --auto-scaling-group-name my-asg \
   --launch-template LaunchTemplateName=my-template,Version='$Latest' \
   --min-size 1 --max-size 3 --desired-capacity 2
 ```
-> 
 
 ```bash
-# What does this do?
+# List Auto Scaling Groups
 aws autoscaling describe-auto-scaling-groups
 ```
-> 
 
 ```bash
-# What does this do?
+# Add a target tracking scaling policy for CPU at 50%
 aws autoscaling put-scaling-policy --auto-scaling-group-name my-asg \
   --policy-name cpu-target --policy-type TargetTrackingScaling \
   --target-tracking-configuration '{"PredefinedMetricSpecification":{"PredefinedMetricType":"ASGAverageCPUUtilization"},"TargetValue":50.0}'
 ```
-> 
 
 ---
 
-## Hands-On Tasks
-
-- Create an ALB with two EC2 instances serving different pages, verify traffic distribution
-- Set up path-based routing: /api to target group A, /web to target group B
-- Configure HTTPS on ALB using an ACM certificate, redirect HTTP to HTTPS
-- Create an ASG with min=1, max=3, desired=2 behind the ALB
-- Terminate one instance and watch the ASG replace it
-- Add a target tracking policy for CPU and stress-test it
-
----
-
-## Quick Quiz
-
-1. What is the difference between ALB and NLB? When would you use each?
-   > 
-
-2. Walk through what happens when an ASG health check fails on an instance behind an ALB.
-   > 
-
-3. You are designing a highly available web app. Describe your ALB and ASG setup.
-   > 
-
----
-
-## Confidence: 🔴 🟡 🟢
-
-**Date completed:** ___________
