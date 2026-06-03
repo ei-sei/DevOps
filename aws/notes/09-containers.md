@@ -21,16 +21,16 @@ What is ECS (Elastic Container Service)?
 > AWS's managed service for running and scaling Docker containers. Handles scheduling, placement, and lifecycle of your containers.
 
 What is a cluster in ECS?
-> A **cluster** is a logical grouping of compute resources where ECS runs your containers - it's the boundary within which your tasks and services operate.
+> A [**cluster**](#part-6-cluster) is a logical grouping of compute resources where ECS runs your containers - it's the boundary within which your tasks and services operate.
 
 What is a task definition?
-> A **task definition** is a JSON blueprint that describes how one or more containers should run - the image, CPU, memory, ports, environment variables, and IAM roles.
+> A [**task definition**](#part-5-task-definitions) is a JSON blueprint that describes how one or more containers should run - the image, CPU, memory, ports, environment variables, and IAM roles.
 
 What is a task?
-> A **task** is a running instance of a task definition - the actual containers executing on your cluster.
+> A **task** is a single running instance of a task definition - the actual containers executing on your cluster.
 
 What is a service?
-> A **service** is an ECS construct that ensures a specified number of tasks are always running and replaces any that stop or fail, keeping your application continuously available.
+> A [**service**](#part-7-service) is an ECS construct that ensures a specified number of tasks are always running and replaces any that stop or fail, keeping your application continuously available.
 
 What is the relationship between task definition, task, and service?
 > - task definition is the template.
