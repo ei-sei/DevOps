@@ -40,6 +40,10 @@ What is the relationship between task definition, task, and service?
 How does an ECS service differ from just running a standalone task?
 > An ECS service continuously monitors running tasks and automatically replaces failed ones to maintain your desired count, whereas a standalone task runs once and stops when finished.
 
+### ECS flowchhart
+
+![flowchart](https://raw.githubusercontent.com/ei-sei/headscale-ecs/main/assets/ecs-flowchart.png)
+
 ---
 
 ## Part 3: ECR (Elastic Container Registry)
