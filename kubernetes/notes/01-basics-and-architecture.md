@@ -107,55 +107,24 @@ Can resources in different namespaces see each other?
 
 ---
 
-## Part 8: Lab - Touring the Cluster
+## Key Terminology
 
-What does "touring the cluster" with the Kubernetes Dashboard or `kubectl` typically involve?
-> Listing nodes and their status, listing the namespaces that exist by default, inspecting what's running in `kube-system`, and confirming the control plane components are healthy - building a mental map of the cluster before deploying anything of your own.
-
-What is the fastest way to sanity-check a new cluster is working?
-> `kubectl get nodes` to confirm node status is `Ready`, then `kubectl get pods -A` to see every pod running across all namespaces, including the control plane's own components if running as pods (common in Kind).
-
----
-
-## What's Missing From This Module
-
-A few foundational pieces aren't in this list and are worth flagging before you move on, since later topics usually assume them:
-
-- **Pods** - the most basic deployable unit in Kubernetes isn't mentioned at all yet. Architecture and namespaces make more sense once you know a Pod is what actually gets scheduled onto a node.
-- **kubectl basics & kubeconfig** - the lab assumes you can already run `kubectl` against the right cluster, but how `kubectl` finds and authenticates to a cluster (`~/.kube/config`, contexts) isn't covered as its own topic.
-- **Minikube** - your branch README mentions both Minikube and Kind, but this module only covers Kind. Worth a quick comparison note once you've used Kind, even if you primarily stick with Kind going forward.
-- **YAML manifests / declarative config** - "how containers run in K8s" is covered, but not yet *how you tell it* what to run (i.e. writing a Pod or Deployment manifest) - likely coming in the next module, but worth checking it's not skipped entirely.
-
----
-
-## Commands to Learn
-
-```bash
-# Create a local cluster with Kind
-kind create cluster --name dev
-```
-
-```bash
-# Confirm the cluster is reachable and control plane is up
-kubectl cluster-info --context kind-dev
-```
-
-```bash
-# Check node status
-kubectl get nodes
-```
-
-```bash
-# List every pod across all namespaces
-kubectl get pods -A
-```
-
-```bash
-# List all namespaces
-kubectl get namespaces
-```
-
-```bash
-# Tear down the Kind cluster
-kind delete cluster --name dev
-```
+| Term | Definition |
+|------|------------|
+| **Cluster** | A set of machines (nodes) that Kubernetes manages as a single system. |
+| **Node** | A single machine (physical or virtual) in the cluster. Can be a control plane node or a worker node. |
+| **Pod** | The smallest deployable unit in Kubernetes - one or more tightly coupled containers that share networking and storage. |
+| **Container Runtime** | The software that actually runs containers on a node (e.g. containerd, CRI-O). |
+| **Control Plane** | The set of components that make cluster-wide decisions: API server, etcd, scheduler, and controller manager. |
+| **Worker Node** | A node that runs your application pods. Hosts kubelet, kube-proxy, and the container runtime. |
+| **API Server** | The front door of the cluster - all `kubectl` commands and internal components communicate through it. |
+| **etcd** | A distributed key-value store that holds all cluster state and configuration. |
+| **Scheduler** | Watches for new pods with no assigned node and picks the best node to run them on. |
+| **Controller Manager** | Runs control loops that reconcile actual cluster state with the desired state declared in manifests. |
+| **kubelet** | An agent on every worker node that ensures the containers described in a pod spec are running and healthy. |
+| **kube-proxy** | Maintains network rules on each node so traffic can reach the right pod regardless of which node it lands on. |
+| **Namespace** | A logical partition within a cluster used to isolate resources by team, environment, or application. |
+| **Manifest / Spec** | A YAML (or JSON) file that declaratively describes a Kubernetes resource (e.g. a Pod or Deployment). |
+| **kubectl** | The command-line tool used to interact with the Kubernetes API server to inspect and manage cluster resources. |
+| **Kind** | Kubernetes IN Docker - runs a full multi-node cluster locally using Docker containers as nodes, for dev/testing. |
+| **CRI** | Container Runtime Interface - the standard API Kubernetes uses to communicate with any compliant container runtime. |
