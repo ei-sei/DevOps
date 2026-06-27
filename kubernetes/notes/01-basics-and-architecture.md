@@ -59,6 +59,8 @@ Why isn't Docker itself used as the runtime anymore?
 
 ## Part 5: Kubernetes Architecture
 
+![architecture](https://kubernetes.io/images/docs/kubernetes-cluster-architecture.svg)
+
 What are the two broad categories of machines in a Kubernetes cluster?
 > **Control plane nodes**, which make cluster-wide decisions, and **worker nodes**, which actually run your application containers.
 
