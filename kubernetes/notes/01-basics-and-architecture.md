@@ -128,3 +128,67 @@ Can resources in different namespaces see each other?
 | **kubectl** | The command-line tool used to interact with the Kubernetes API server to inspect and manage cluster resources. |
 | **Kind** | Kubernetes IN Docker - runs a full multi-node cluster locally using Docker containers as nodes, for dev/testing. |
 | **CRI** | Container Runtime Interface - the standard API Kubernetes uses to communicate with any compliant container runtime. |
+
+---
+
+## Getting Started: Installing Kind & Creating Your First Cluster
+
+### What is Kind, briefly
+
+Kind (Kubernetes IN Docker) runs each cluster "node" as a Docker container instead of a VM, so a full multi-node cluster comes up in seconds on a single machine. It's built for local development and CI, not for running production workloads.
+
+### Prerequisites
+
+- **Docker** installed and running - Kind's nodes are Docker containers, so Docker has to be up first.
+- **kubectl** installed - Kind only creates/destroys the cluster; kubectl is what you actually use to talk to it.
+
+```bash
+# Confirm Docker is running
+docker ps
+
+# Install kubectl (Fedora)
+sudo dnf install kubectl
+kubectl version --client
+```
+
+### Installing Kind
+
+```bash
+curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.27.0/kind-linux-amd64
+chmod +x ./kind
+sudo mv ./kind /usr/local/bin/kind
+kind version
+```
+
+### Creating your first cluster
+
+A plain `kind create cluster` gives you a single all-in-one node, which hides the control-plane/worker split covered in Part 5. Use a config file instead to get a real multi-node layout:
+
+`kind-config.yml`
+```yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+  - role: worker
+  - role: worker
+```
+
+```bash
+kind create cluster --name dev --config lab/kind-config.yml
+```
+
+### Verifying the cluster
+
+```bash
+kubectl cluster-info --context kind-dev
+kubectl get nodes
+```
+
+`kubectl get nodes` should list three nodes - one `control-plane` and two `worker` - confirming the multi-node setup actually took effect.
+
+### Tearing it down
+
+```bash
+kind delete cluster --name dev
+```
