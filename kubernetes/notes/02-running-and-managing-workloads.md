@@ -31,7 +31,11 @@ How do you create a Pod imperatively, without a YAML file?
 > `kubectl run my-pod --image=nginx:latest` creates a Pod directly from the command line - useful for quick tests, but not reproducible or version-controlled the way a YAML manifest is.
 
 What are the main Pod phases?
-> **Pending** (accepted but not yet scheduled or still pulling images), **Running** (at least one container is running), **Succeeded** (all containers exited successfully, won't restart), **Failed** (all containers terminated and at least one failed), and **Unknown** (state can't be determined, usually a node communication issue).
+> - **Pending** (accepted but not yet scheduled or still pulling images),
+> - **Running** (at least one container is running),
+> - **Succeeded** (all containers exited successfully, won't restart),
+> - **Failed** (all containers terminated and at least one failed), and
+> - **Unknown** (state can't be determined, usually a node communication issue).
 
 What is the difference between a Pod's phase and a container's state within it?
 > The Pod phase is a coarse summary of the whole Pod, while each container inside it has its own state (`Waiting`, `Running`, `Terminated`) - a Pod can show `Running` while one of its containers is still `Waiting` to start.
