@@ -254,12 +254,14 @@ Give an example of an annotation:
 
 ---
 
-## Part 10: Lab - Pods, Controllers, and Deployments
+## Part 10: Other Workload Controllers
 
-What is the typical flow of this kind of lab?
-> Create a bare Pod and observe it has no self-healing, delete it and confirm nothing replaces it, then create the same workload as a Deployment and confirm Kubernetes automatically recreates a Pod you delete - directly demonstrating why Deployments exist on top of Pods.
-
-What should you check after deleting a Pod that's managed by a Deployment?
-> `kubectl get pods` shortly after - a new Pod should appear automatically as the ReplicaSet behind the Deployment notices the discrepancy between desired and actual replica count and corrects it.
+| Controller | What it does | Key trait | Use case |
+|---|---|---|---|
+| ReplicaSet (standalone) | Keeps N identical Pods running | Rarely created directly - a Deployment already creates and manages one for you, plus adds rollouts/rollback | Underlying mechanism behind Deployments |
+| DaemonSet | Runs exactly one Pod per node (or a subset via `nodeSelector`) | Pod count tracks node count automatically, not a fixed number | Log collectors, monitoring agents, CNI/networking components |
+| StatefulSet | Like a Deployment, but for workloads needing stable identity | Predictable Pod names (`app-0`, `app-1`...), ordered create/scale/delete, headless Service for per-Pod DNS, `volumeClaimTemplate` for per-Pod storage that follows the Pod | Databases and anything needing stable identity + storage |
+| Job | Runs a Pod to completion for a one-off task | Retries until `completions` target is met; `parallelism` controls how many run at once | Batch processing, one-off scripts |
+| CronJob | Creates a Job on a recurring cron schedule | Trigger manually with `kubectl create job --from=cronjob/<name>`; history capped via `successfulJobsHistoryLimit`/`failedJobsHistoryLimit` | Backups, reports, scheduled cleanup |
 
 ---
