@@ -90,3 +90,24 @@
 | `kubectl get deployment <name> -o jsonpath='{.spec.template.spec.containers[0].image}'` | Check which image a Deployment is currently using |
 | `kubectl get deployment <name> -o jsonpath='{.spec.strategy}'` | Check a Deployment's update strategy (`maxUnavailable`, `maxSurge`) |
 | `kubectl delete deployment <name>` | Delete a Deployment |
+
+---
+
+## Other Workload Controllers
+
+| Command | What it does |
+|---|---|
+| `kubectl get rs` | List ReplicaSets |
+| `kubectl scale rs <name> --replicas=N` | Scale a ReplicaSet directly |
+| `kubectl describe rs <name>` | Full ReplicaSet details |
+| `kubectl get ds` | List DaemonSets |
+| `kubectl describe ds <name>` | Full DaemonSet details |
+| `kubectl rollout status ds/<name>` | Check a DaemonSet's rollout status |
+| `kubectl get sts` | List StatefulSets |
+| `kubectl scale sts <name> --replicas=N` | Scale a StatefulSet |
+| `kubectl rollout status sts/<name>` | Check a StatefulSet's rollout status |
+| `kubectl get jobs` | List Jobs |
+| `kubectl describe job <name>` | Full Job details |
+| `kubectl logs job/<name>` | View a Job's logs |
+| `kubectl get cronjobs` | List CronJobs |
+| `kubectl create job --from=cronjob/<name> <job-name>` | Manually trigger a CronJob's Job outside its schedule |
