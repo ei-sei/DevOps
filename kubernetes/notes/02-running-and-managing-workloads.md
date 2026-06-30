@@ -77,6 +77,16 @@ What is the `template` field in a Deployment for?
 How do you create a Deployment imperatively?
 > `kubectl create deployment my-app --image=nginx:latest --replicas=3` - quick for testing, but like imperative Pods, not the recommended approach for anything you want to track in version control.
 
+**Pod vs Deployment**
+
+| Aspect | Pod | Deployment |
+|---|---|---|
+| Self-healing | ❌ | ✅ |
+| Scaling | Manual | Built-in |
+| Rolling updates | ❌ | ✅ |
+| Rollback | ❌ | ✅ |
+| Production use | Never alone | Always |
+
 ---
 
 ## Part 3: ReplicaSets
