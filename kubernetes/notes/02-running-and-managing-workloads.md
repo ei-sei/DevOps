@@ -118,6 +118,15 @@ What is the Adapter pattern?
 What is an Ephemeral Container?
 > A temporary container you can inject into an already-running Pod for debugging, without restarting the Pod or its existing containers - useful when a minimal production image has no shell or debugging tools built in.
 
+**Key Patterns Summary**
+
+| Pattern | Description | Example Use |
+|---|---|---|
+| Sidecar | Helper alongside main | Logging, proxies, sync |
+| Ambassador | Proxy to external | Database connection pooling |
+| Adapter | Transform output | Log format conversion |
+| Init Container | Setup before main | Wait for DB, download config |
+
 ---
 
 ## Part 5: Quality of Service (QoS)
