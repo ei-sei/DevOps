@@ -201,6 +201,14 @@ What is a Rollback?
 How does Kubernetes know what to roll back to?
 > Each Deployment update is recorded as a new revision (tracked via its ReplicaSets), and `kubectl rollout history` lets you see and target a specific prior revision to return to.
 
+**Deployment Strategies Comparison**
+
+| Strategy | Downtime | Two versions live | Use when |
+|---|---|---|---|
+| RollingUpdate (default) | None | Briefly, yes | App tolerates mixed versions during rollout |
+| Recreate | Brief | Never | Breaking changes - old and new can't run together |
+| Rollback | None | Briefly, yes | Bad deployment detected - reverts to previous revision |
+
 ---
 
 ## Part 8: Resource Management
