@@ -57,3 +57,19 @@
 | `kubectl get pod <name> -o jsonpath='{.status.initContainerStatuses[0].state}'` | Check an init container's state |
 | `kubectl get pod <name> -o jsonpath='{.status.containerStatuses[0].state}'` | Check a main container's state |
 | `kubectl get pods -l 'app in (a,b,c)'` | Filter pods using a set-based label selector |
+
+---
+
+## Deployments & ReplicaSets
+
+| Command | What it does |
+|---|---|
+| `kubectl delete pod --all` | Delete every pod in the current namespace |
+| `kubectl get deployments` | List Deployments |
+| `kubectl get replicasets` | List ReplicaSets |
+| `kubectl get pods --show-labels` | List pods with all their labels shown |
+| `kubectl get pods -l app=nginx -o jsonpath='{.items[0].metadata.name}'` | Get the name of the first pod matching a label |
+| `kubectl describe deployment <name>` | Full Deployment details - replica counts, strategy, events |
+| `kubectl rollout status deployment/<name>` | Check whether a Deployment's rollout has finished |
+| `kubectl get deployment <name> -o jsonpath='{.status.conditions[*].type}'` | Check a Deployment's status conditions (e.g. `Progressing`, `Available`) |
+| `kubectl get deployments,replicasets,pods` | List multiple resource types in one command |
