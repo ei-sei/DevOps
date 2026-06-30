@@ -39,6 +39,10 @@ What does Kubernetes actually do for you that plain Docker doesn't?
 When should you not use Kubernetes?
 > For a single small application, a side project, or a team without the operational capacity to run a cluster, Kubernetes adds significant complexity and overhead for little benefit - a single server with Docker Compose, or a managed PaaS, is often the better choice until you actually need orchestration at scale.
 
+**Clusters, nodes and pods at a glance**
+
+![cluster,nodes,pods](https://media.licdn.com/dms/image/v2/D4D22AQEpC2IL_L862g/feedshare-image-high-res/B4DZp9FQnaGgAo-/0/1763035123308?e=1784160000&v=beta&t=8znSVVU2QiVsRwzm5lCUx16XmcOOGDy7c-b8YTWwa_Y)
+
 ---
 
 ## Part 4: How Containers Run in Kubernetes
@@ -60,10 +64,6 @@ Why isn't Docker itself used as the runtime anymore?
 ## Part 5: Kubernetes Architecture
 
 ![architecture](https://kubernetes.io/images/docs/kubernetes-cluster-architecture.svg)
-
-Clusters, nodes and pods at a glance
-
-![cluster,nodes,pods](https://media.licdn.com/dms/image/v2/D4D22AQEpC2IL_L862g/feedshare-image-high-res/B4DZp9FQnaGgAo-/0/1763035123308?e=1784160000&v=beta&t=8znSVVU2QiVsRwzm5lCUx16XmcOOGDy7c-b8YTWwa_Y)
 
 What are the two broad categories of machines in a Kubernetes cluster?
 > **Control plane nodes**, which make cluster-wide decisions, and **worker nodes**, which actually run your application containers.
