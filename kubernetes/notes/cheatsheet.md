@@ -29,3 +29,31 @@
 | `kubectl get pod <name> -o yaml` | Shows the full resource definition in detail, including status fields set by the cluster |
 | `kubectl delete pod <name>` | Deletes a pod |
 | `kubectl get pods` | Run again after a delete to verify the pod is gone |
+
+---
+
+## Debugging & Interacting with Pods
+
+| Command | What it does |
+|---|---|
+| `kubectl describe pod <name>` | Full pod details + events |
+| `kubectl logs <pod>` | Container output |
+| `kubectl logs <pod> -f` | Follow logs in real-time |
+| `kubectl exec <pod> -- <cmd>` | Run command in container |
+| `kubectl exec -it <pod> -- /bin/sh` | Interactive shell |
+| `kubectl get pods -l key=value` | Filter by label |
+
+---
+
+## Multi-Container Pods & Init Containers
+
+| Command | What it does |
+|---|---|
+| `kubectl wait --for=condition=Ready pod/<name> --timeout=60s` | Wait for a pod to become ready before continuing |
+| `kubectl get pod <name> -o jsonpath='{.status.podIP}'` | Get a pod's IP address |
+| `kubectl logs <pod> -c <container>` | View logs from one specific container in a multi-container pod |
+| `kubectl exec <pod> -c <container> -- <cmd>` | Run a command in one specific container (without `-c`, defaults to the first container) |
+| `kubectl get pods <name> -w` | Watch a pod's status change in real-time (e.g. `Init:0/1` -> `Running`) |
+| `kubectl get pod <name> -o jsonpath='{.status.initContainerStatuses[0].state}'` | Check an init container's state |
+| `kubectl get pod <name> -o jsonpath='{.status.containerStatuses[0].state}'` | Check a main container's state |
+| `kubectl get pods -l 'app in (a,b,c)'` | Filter pods using a set-based label selector |
