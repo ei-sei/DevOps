@@ -73,3 +73,20 @@
 | `kubectl rollout status deployment/<name>` | Check whether a Deployment's rollout has finished |
 | `kubectl get deployment <name> -o jsonpath='{.status.conditions[*].type}'` | Check a Deployment's status conditions (e.g. `Progressing`, `Available`) |
 | `kubectl get deployments,replicasets,pods` | List multiple resource types in one command |
+
+---
+
+## Scaling & Rolling Updates
+
+| Command | What it does |
+|---|---|
+| `kubectl scale deployment <name> --replicas=N` | Scale a Deployment up or down imperatively |
+| `kubectl get rs -l app=<value>` | List ReplicaSets filtered by label (`rs` is the shorthand for replicasets) |
+| `kubectl set image deployment/<name> <container>=<image>` | Update a container's image, triggering a rolling update |
+| `kubectl rollout history deployment/<name>` | View a Deployment's revision history |
+| `kubectl rollout history deployment/<name> --revision=N` | View details of a specific revision |
+| `kubectl rollout undo deployment/<name>` | Roll back to the previous revision |
+| `kubectl rollout undo deployment/<name> --to-revision=N` | Roll back to a specific revision |
+| `kubectl get deployment <name> -o jsonpath='{.spec.template.spec.containers[0].image}'` | Check which image a Deployment is currently using |
+| `kubectl get deployment <name> -o jsonpath='{.spec.strategy}'` | Check a Deployment's update strategy (`maxUnavailable`, `maxSurge`) |
+| `kubectl delete deployment <name>` | Delete a Deployment |
