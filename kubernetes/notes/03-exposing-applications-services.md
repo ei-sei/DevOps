@@ -140,6 +140,45 @@ When would a mesh be overkill?
 
 ---
 
+## Lab: Exposing a Deployment with ClusterIP
+
+**Goal:** Expose a Deployment via a ClusterIP Service, then confirm another Pod can reach it by DNS name instead of a Pod IP.
+
+```bash
+# 1. Create a Deployment to expose
+kubectl create deployment web --image=nginx:latest --replicas=2
+
+# 2. Expose it as a ClusterIP Service
+kubectl expose deployment web --port=80 --target-port=80
+kubectl get service web
+```
+
+```bash
+# 3. Confirm the Service has real Pod IPs behind it
+kubectl get endpoints web
+```
+
+```bash
+# 4. From a temporary Pod, reach it by Service name - not by Pod IP
+kubectl run tmp-shell --rm -it --image=busybox -- wget -qO- http://web
+```
+
+```bash
+# 5. Delete one of the backing Pods and confirm the Service still works
+POD_NAME=$(kubectl get pods -l app=web -o jsonpath='{.items[0].metadata.name}')
+kubectl delete pod $POD_NAME
+kubectl run tmp-shell --rm -it --image=busybox -- wget -qO- http://web
+# Expect: still succeeds - the Service routed to the remaining/replacement Pod, no IP needed
+```
+
+```bash
+# 6. Clean up
+kubectl delete service web
+kubectl delete deployment web
+```
+
+---
+
 ## Commands to Learn
 
 ```bash
