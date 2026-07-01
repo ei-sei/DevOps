@@ -265,3 +265,40 @@ Give an example of an annotation:
 | CronJob | Creates a Job on a recurring cron schedule | Trigger manually with `kubectl create job --from=cronjob/<name>`; history capped via `successfulJobsHistoryLimit`/`failedJobsHistoryLimit` | Backups, reports, scheduled cleanup |
 
 ---
+
+## Lab: Self-Healing - Pods vs Deployments
+
+**Goal:** See first-hand why bare Pods aren't used in production, by comparing what happens when you delete each.
+
+```bash
+# 1. Create a standalone Pod
+kubectl run lonely-pod --image=nginx:latest
+
+# 2. Delete it, then check
+kubectl delete pod lonely-pod
+kubectl get pods
+# Expect: nothing - it's gone for good, nothing recreates it
+```
+
+```bash
+# 3. Create the same workload as a Deployment instead
+kubectl create deployment nginx-deploy --image=nginx:latest --replicas=3
+kubectl get pods -l app=nginx-deploy
+```
+
+```bash
+# 4. Delete one of its Pods
+POD_NAME=$(kubectl get pods -l app=nginx-deploy -o jsonpath='{.items[0].metadata.name}')
+kubectl delete pod $POD_NAME
+
+# 5. Check again immediately
+kubectl get pods -l app=nginx-deploy
+# Expect: still 3 Pods - a replacement was already scheduled by the ReplicaSet
+```
+
+```bash
+# 6. Clean up
+kubectl delete deployment nginx-deploy
+```
+
+---
