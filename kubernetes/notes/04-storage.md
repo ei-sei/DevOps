@@ -130,6 +130,70 @@ What does a CSI driver actually do?
 
 ---
 
+## Lab: Data Survives a Pod Restart
+
+**Goal:** Prove that data on a PVC outlives the Pod using it, unlike a Pod's own filesystem.
+
+```yaml
+# 1. pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: demo-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+```
+
+```yaml
+# 2. pod.yaml - mounts the PVC and writes a file to it on startup
+apiVersion: v1
+kind: Pod
+metadata:
+  name: storage-demo
+spec:
+  containers:
+    - name: app
+      image: busybox
+      command: ["sh", "-c", "echo 'hello from the first pod' > /data/message.txt && sleep 3600"]
+      volumeMounts:
+        - name: demo-vol
+          mountPath: /data
+  volumes:
+    - name: demo-vol
+      persistentVolumeClaim:
+        claimName: demo-pvc
+```
+
+```bash
+# 3. Apply both and confirm the file exists
+kubectl apply -f pvc.yaml -f pod.yaml
+kubectl exec storage-demo -- cat /data/message.txt
+```
+
+```bash
+# 4. Delete the Pod (not the PVC) and recreate it
+kubectl delete pod storage-demo
+kubectl apply -f pod.yaml
+```
+
+```bash
+# 5. Confirm the file is still there, from before this Pod ever existed
+kubectl exec storage-demo -- cat /data/message.txt
+# Expect: "hello from the first pod" - the new Pod re-mounted the same PVC/PV
+```
+
+```bash
+# 6. Clean up
+kubectl delete pod storage-demo
+kubectl delete pvc demo-pvc
+```
+
+---
+
 ## Commands to Learn
 
 ```bash
