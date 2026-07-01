@@ -27,6 +27,9 @@ Which type should you default to?
 
 ## Part 3: ClusterIP in Practice
 
+What is a ClusterIP?
+> A ClusterIP is the default Service type in Kubernetes - it gives your Service a stable, internal-only virtual IP address that other Pods inside the cluster can use to reach it, no matter which actual Pods are currently running behind it.
+
 What does a minimal ClusterIP Service look like?
 > ```yaml
 > apiVersion: v1
