@@ -10,6 +10,16 @@ What problem does a Service solve?
 How does a Service know which Pods to send traffic to?
 > Via a label selector, the same mechanism Deployments and ReplicaSets use - any Pod matching the Service's selector becomes a routable endpoint.
 
+**Pod vs Deployment vs Service**
+
+| | Pod | Deployment | Service |
+|---|---|---|---|
+| Purpose | Runs your container(s) | Keeps N Pods running, handles rollouts | Gives those Pods a stable address |
+| Lifespan/Stability | Mortal - IP changes on every restart | Manages Pod identity churn, not itself addressed | Stable for as long as the Service exists |
+| Networking role | Has an IP, but not meant to be tracked directly | None directly - operates one layer above networking | The thing other Pods actually talk to |
+
+These three stack together, not compete: a Deployment manages a set of Pods, and a Service sits in front of them so nothing else in the cluster ever needs to know which Pods currently exist or what their IPs are.
+
 ---
 
 ## Part 2: Service Types
