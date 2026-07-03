@@ -12,11 +12,11 @@ How does a Service know which Pods to send traffic to?
 
 **Pod vs Deployment vs Service**
 
-| | Pod | Deployment | Service |
-|---|---|---|---|
-| Purpose | Runs your container(s) | Keeps N Pods running, handles rollouts | Gives those Pods a stable address |
-| Lifespan/Stability | Mortal - IP changes on every restart | Manages Pod identity churn, not itself addressed | Stable for as long as the Service exists |
-| Networking role | Has an IP, but not meant to be tracked directly | None directly - operates one layer above networking | The thing other Pods actually talk to |
+|                    | Pod                                             | Deployment                                          | Service                                  |
+| ------------------ | ----------------------------------------------- | --------------------------------------------------- | ---------------------------------------- |
+| Purpose            | Runs your container(s)                          | Keeps N Pods running, handles rollouts              | Gives those Pods a stable address        |
+| Lifespan/Stability | Mortal - IP changes on every restart            | Manages Pod identity churn, not itself addressed    | Stable for as long as the Service exists |
+| Networking role    | Has an IP, but not meant to be tracked directly | None directly - operates one layer above networking | The thing other Pods actually talk to    |
 
 These three stack together, not compete: a Deployment manages a set of Pods, and a Service sits in front of them so nothing else in the cluster ever needs to know which Pods currently exist or what their IPs are.
 
@@ -24,11 +24,11 @@ These three stack together, not compete: a Deployment manages a set of Pods, and
 
 ## Part 2: Service Types
 
-| Type | Accessible from | What it does |
-|---|---|---|
-| **ClusterIP** (default) | Inside the cluster only | Gives the Service a stable internal IP - the standard way Pods talk to each other |
-| **NodePort** | Outside the cluster, via `<NodeIP>:<port>` | Opens the same static port (30000-32767) on every node, forwarding to the Service |
-| **LoadBalancer** | Outside the cluster, via a cloud LB | Provisions an external cloud load balancer (e.g. AWS NLB) that routes to the Service - builds on top of NodePort/ClusterIP underneath |
+| Type                    | Accessible from                            | What it does                                                                                                                          |
+| ----------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **ClusterIP** (default) | Inside the cluster only                    | Gives the Service a stable internal IP - the standard way Pods talk to each other                                                     |
+| **NodePort**            | Outside the cluster, via `<NodeIP>:<port>` | Opens the same static port (30000-32767) on every node, forwarding to the Service                                                     |
+| **LoadBalancer**        | Outside the cluster, via a cloud LB        | Provisions an external cloud load balancer (e.g. AWS NLB) that routes to the Service - builds on top of NodePort/ClusterIP underneath |
 
 Which type should you default to?
 > ClusterIP, unless you specifically need external access - NodePort and LoadBalancer both still create a ClusterIP underneath.
@@ -126,7 +126,7 @@ What is a service mesh?
 
 ## Part 8: How a Service Mesh Works (Istio/Linkerd)
 
-What is the sidecar proxy pattern in a service mesh?
+What is the [sidecar proxy pattern](./02-running-and-managing-workloads.md#part-4-pod-failure--container-patterns) in a service mesh?
 > Every Pod gets an extra sidecar proxy container (e.g. Envoy for Istio) injected alongside the main application - all inbound and outbound traffic is transparently routed through this proxy instead of going directly.
 
 What is the control plane's role?
