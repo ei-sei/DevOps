@@ -58,7 +58,7 @@ What's the difference between `port` and `targetPort`?
 > `port` is what the Service itself listens on. `targetPort` is the port on the Pod it forwards traffic to - they don't have to match.
 
 How do other Pods reach a ClusterIP Service?
-> By its stable DNS name, `<service-name>.<namespace>.svc.cluster.local` (or just `<service-name>` within the same namespace) - never by tracking individual Pod IPs.
+> By its stable DNS name, `<service-name>.<namespace>.svc.cluster.local` (or just `<service-name>` within the same [namespace](./01-basics-and-architecture.md#part-7-namespaces)) - never by tracking individual Pod IPs.
 
 ---
 
