@@ -102,7 +102,11 @@ What is a StorageClass?
 > A template that tells Kubernetes how to automatically provision a PV on demand - which storage backend/driver to use, what parameters to pass (disk type, IOPS, etc.), and what reclaim policy to apply.
 
 What is the end-to-end dynamic provisioning flow?
-> 1. A user creates a PVC referencing a StorageClass. 2. Kubernetes sees no matching PV exists. 3. The StorageClass's provisioner is invoked to create real storage on demand (e.g. calling the cloud provider's API for a new disk). 4. A matching PV is created automatically and bound to the PVC. 5. The Pod mounts the PVC as normal, unaware any of this happened behind the scenes.
+> 1. A user creates a PVC referencing a StorageClass. 
+> 2. Kubernetes sees no matching PV exists. 
+> 3. The StorageClass's provisioner is invoked to create real storage on demand (e.g. calling the cloud provider's API for a new disk). 
+> 4. A matching PV is created automatically and bound to the PVC. 
+> 5. The Pod mounts the PVC as normal, unaware any of this happened behind the scenes.
 
 What triggers this automatically, versus needing an admin?
 > Simply creating a PVC that references a StorageClass is enough - no admin has to pre-provision anything, which is the entire point of "dynamic" provisioning over the static/manual approach in Part 2.
