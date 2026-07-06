@@ -67,7 +67,7 @@ What happens if no PV matches a PVC's request?
 
 ## Part 4: The Problem With Deployments and Storage
 
-Why don't Deployments work well for stateful, storage-heavy apps?
+Why don't [Deployments](./02-running-and-managing-workloads.md#part-2-deployments) work well for stateful, storage-heavy apps?
 > A Deployment's Pods are interchangeable and unordered - if you attach the same PVC to multiple replicas, they'd all fight over the same volume, and a restarted Pod gets a fresh identity with no guarantee of reconnecting to "its" data.
 
 What specifically goes wrong with shared storage under a Deployment?
