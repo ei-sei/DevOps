@@ -56,7 +56,9 @@ spec:
 ```
 
 What are the common access modes?
-> **ReadWriteOnce** (one node can mount it read-write), **ReadOnlyMany** (many nodes, read-only), **ReadWriteMany** (many nodes, read-write - not supported by all storage backends).
+> - **ReadWriteOnce** (one node can mount it read-write), 
+> - **ReadOnlyMany** (many nodes, read-only), 
+> - **ReadWriteMany** (many nodes, read-write - not supported by all storage backends).
 
 What happens if no PV matches a PVC's request?
 > The PVC stays `Pending` until a matching PV becomes available - either created manually, or automatically via dynamic provisioning.
