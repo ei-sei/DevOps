@@ -39,6 +39,9 @@ What is a PersistentVolumeClaim?
 How does a Pod actually use persistent storage?
 > The Pod spec references a PVC as a volume, the PVC is bound to a PV, and the PV is backed by real storage - the Pod itself never talks to a PV directly.
 
+![pod, pvc, pv, storage](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT7sWohnFPjeRIXrU0iadQkRQdlAdwPSHbB-LFOVIAJtUyiXjT30OhN6d6&s=10)
+
+
 ```yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
