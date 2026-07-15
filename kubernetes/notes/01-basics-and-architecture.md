@@ -69,10 +69,15 @@ What are the two broad categories of machines in a Kubernetes cluster?
 > **Control plane nodes**, which make cluster-wide decisions, and **worker nodes**, which actually run your application containers.
 
 What runs on the control plane?
-> The **API server** (the front door for all cluster communication), **etcd** (the cluster's key-value store holding all state), the **scheduler** (decides which node a new pod runs on), and the **controller manager** (runs control loops that keep actual state matching desired state).
+> - **API server** (the front door for all cluster communication), 
+> - **etcd** (the cluster's key-value store holding all state), the 
+> - **scheduler** (decides which node a new pod runs on), and the 
+> - **controller manager** (runs control loops that keep actual state matching desired state).
 
 What runs on each worker node?
-> The **kubelet** (an agent that talks to the API server and ensures containers are running as instructed), the **container runtime** (actually runs the containers), and **kube-proxy** (handles networking rules so traffic reaches the right pod).
+> - **kubelet** (an agent that talks to the API server and ensures containers are running as instructed),
+> - **container runtime** (actually runs the containers), and 
+> - **kube-proxy** (handles networking rules so traffic reaches the right pod).
 
 How does a typical request flow through the architecture?
 > You send a request to the API server (e.g. via `kubectl`), it's persisted in etcd, the scheduler assigns it to a node, and that node's kubelet instructs the container runtime to start the container.
