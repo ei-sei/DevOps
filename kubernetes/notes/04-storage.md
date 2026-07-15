@@ -24,7 +24,10 @@ What does a PV represent, conceptually?
 > The actual underlying storage resource - an EBS volume, an NFS share, a local disk - wrapped in a Kubernetes object so it can be tracked and allocated like any other resource.
 
 What are common PV attributes?
-> Capacity (size), access modes (how many nodes/Pods can use it, and how), a reclaim policy (what happens to the storage after it's released), and the storage backend/driver details.
+> - Capacity (size), 
+> - ccess modes (how many nodes/Pods can use it, and how), 
+> - reclaim policy (what happens to the storage after it's released), 
+> - storage backend/driver details.
 
 What is a reclaim policy?
 > What happens to the underlying storage once its claim is deleted - `Retain` keeps the data around for manual recovery, `Delete` removes the underlying storage entirely, `Recycle` is deprecated.
