@@ -79,13 +79,13 @@ How do you create a Deployment imperatively?
 
 **Pod vs Deployment**
 
-| Aspect | Pod | Deployment |
-|---|---|---|
-| Self-healing | ❌ | ✅ |
-| Scaling | Manual | Built-in |
-| Rolling updates | ❌ | ✅ |
-| Rollback | ❌ | ✅ |
-| Production use | Never alone | Always |
+| Aspect          | Pod         | Deployment |
+| --------------- | ----------- | ---------- |
+| Self-healing    | ❌           | ✅          |
+| Scaling         | Manual      | Built-in   |
+| Rolling updates | ❌           | ✅          |
+| Rollback        | ❌           | ✅          |
+| Production use  | Never alone | Always     |
 
 ---
 
@@ -130,12 +130,12 @@ What is an Ephemeral Container?
 
 **Key Patterns Summary**
 
-| Pattern | Description | Example Use |
-|---|---|---|
-| Sidecar | Helper alongside main | Logging, proxies, sync |
-| Ambassador | Proxy to external | Database connection pooling |
-| Adapter | Transform output | Log format conversion |
-| Init Container | Setup before main | Wait for DB, download config |
+| Pattern        | Description           | Example Use                  |
+| -------------- | --------------------- | ---------------------------- |
+| Sidecar        | Helper alongside main | Logging, proxies, sync       |
+| Ambassador     | Proxy to external     | Database connection pooling  |
+| Adapter        | Transform output      | Log format conversion        |
+| Init Container | Setup before main     | Wait for DB, download config |
 
 ---
 
@@ -164,7 +164,9 @@ What is a probe in Kubernetes?
 > A probe is a periodic check the kubelet performs against a container to determine its health or readiness, used to decide whether to restart it or route traffic to it.
 
 What are the three probe types?
-> **Liveness** (is the container still working - restart it if not), **Readiness** (is the container ready to receive traffic - remove it from service endpoints if not, without restarting it), and **Startup** (has the container finished starting up - delays liveness/readiness checks until it passes).
+> - **Liveness** (is the container still working - restart it if not), 
+> - **Readiness** (is the container ready to receive traffic - remove it from service endpoints if not, without restarting it), 
+> - **Startup** (has the container finished starting up - delays liveness/readiness checks until it passes).
 
 Give an example of a liveness probe:
 > ```yaml
@@ -203,11 +205,11 @@ How does Kubernetes know what to roll back to?
 
 **Deployment Strategies Comparison**
 
-| Strategy | Downtime | Two versions live | Use when |
-|---|---|---|---|
-| RollingUpdate (default) | None | Briefly, yes | App tolerates mixed versions during rollout |
-| Recreate | Brief | Never | Breaking changes - old and new can't run together |
-| Rollback | None | Briefly, yes | Bad deployment detected - reverts to previous revision |
+| Strategy                | Downtime | Two versions live | Use when                                               |
+| ----------------------- | -------- | ----------------- | ------------------------------------------------------ |
+| RollingUpdate (default) | None     | Briefly, yes      | App tolerates mixed versions during rollout            |
+| Recreate                | Brief    | Never             | Breaking changes - old and new can't run together      |
+| Rollback                | None     | Briefly, yes      | Bad deployment detected - reverts to previous revision |
 
 ---
 
@@ -256,13 +258,13 @@ Give an example of an annotation:
 
 ## Part 10: Other Workload Controllers
 
-| Controller | What it does | Key trait | Use case |
-|---|---|---|---|
-| ReplicaSet (standalone) | Keeps N identical Pods running | Rarely created directly - a Deployment already creates and manages one for you, plus adds rollouts/rollback | Underlying mechanism behind Deployments |
-| DaemonSet | Runs exactly one Pod per node (or a subset via `nodeSelector`) | Pod count tracks node count automatically, not a fixed number | Log collectors, monitoring agents, CNI/networking components |
-| StatefulSet | Like a Deployment, but for workloads needing stable identity | Predictable Pod names (`app-0`, `app-1`...), ordered create/scale/delete, headless Service for per-Pod DNS, `volumeClaimTemplate` for per-Pod storage that follows the Pod | Databases and anything needing stable identity + storage |
-| Job | Runs a Pod to completion for a one-off task | Retries until `completions` target is met; `parallelism` controls how many run at once | Batch processing, one-off scripts |
-| CronJob | Creates a Job on a recurring cron schedule | Trigger manually with `kubectl create job --from=cronjob/<name>`; history capped via `successfulJobsHistoryLimit`/`failedJobsHistoryLimit` | Backups, reports, scheduled cleanup |
+| Controller              | What it does                                                   | Key trait                                                                                                                                                                  | Use case                                                     |
+| ----------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| ReplicaSet (standalone) | Keeps N identical Pods running                                 | Rarely created directly - a Deployment already creates and manages one for you, plus adds rollouts/rollback                                                                | Underlying mechanism behind Deployments                      |
+| DaemonSet               | Runs exactly one Pod per node (or a subset via `nodeSelector`) | Pod count tracks node count automatically, not a fixed number                                                                                                              | Log collectors, monitoring agents, CNI/networking components |
+| StatefulSet             | Like a Deployment, but for workloads needing stable identity   | Predictable Pod names (`app-0`, `app-1`...), ordered create/scale/delete, headless Service for per-Pod DNS, `volumeClaimTemplate` for per-Pod storage that follows the Pod | Databases and anything needing stable identity + storage     |
+| Job                     | Runs a Pod to completion for a one-off task                    | Retries until `completions` target is met; `parallelism` controls how many run at once                                                                                     | Batch processing, one-off scripts                            |
+| CronJob                 | Creates a Job on a recurring cron schedule                     | Trigger manually with `kubectl create job --from=cronjob/<name>`; history capped via `successfulJobsHistoryLimit`/`failedJobsHistoryLimit`                                 | Backups, reports, scheduled cleanup                          |
 
 ---
 
