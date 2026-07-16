@@ -25,7 +25,7 @@ What does a PV represent, conceptually?
 
 What are common PV attributes?
 > - Capacity (size), 
-> - ccess modes (how many nodes/Pods can use it, and how), 
+> - Access modes (how many nodes/Pods can use it, and how), 
 > - reclaim policy (what happens to the storage after it's released), 
 > - storage backend/driver details.
 
