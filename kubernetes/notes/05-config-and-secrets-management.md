@@ -109,7 +109,10 @@ What does the sync flow look like?
 ## Part 8: The Proper Secrets Flow
 
 What does a "proper" end-to-end secrets flow look like?
-> Secret is created and stored in an external secrets manager -> ESO (or similar) syncs it into the cluster as a native Secret -> the Pod mounts/consumes that Secret as normal -> the actual sensitive value is never written to Git, never manually typed into `kubectl`, and centrally rotatable at the source.
+> 1. Secret is created and stored in an external secrets manager -> 
+> 2. ESO (or similar) syncs it into the cluster as a native Secret -> 
+> 3. The Pod mounts/consumes that Secret as normal -> 
+> 4. The actual sensitive value is never written to Git, never manually typed into `kubectl`, and centrally rotatable at the source.
 
 Why does this matter for GitOps?
 > GitOps tooling (e.g. ArgoCD, Flux) applies everything from Git - if raw Secrets lived in Git, they'd be plaintext in your repo history forever. Syncing operators like ESO let you commit the *reference* to a secret, not the secret itself.
