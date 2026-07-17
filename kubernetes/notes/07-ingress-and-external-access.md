@@ -68,7 +68,8 @@ What are the two core cert-manager objects?
 > An **Issuer** (or **ClusterIssuer** for cluster-wide use) defines *where* certificates come from - e.g. Let's Encrypt via ACME. A **Certificate** requests a specific cert for a specific hostname, referencing that Issuer.
 
 How does cert-manager typically prove domain ownership to Let's Encrypt?
-> Via the **ACME HTTP-01** challenge (serving a token at a specific URL the Ingress routes to) or **DNS-01** challenge (creating a TXT record via a DNS provider API) - DNS-01 also supports wildcard certs, HTTP-01 doesn't.
+> - **ACME HTTP-01** - serves a token at a specific URL the Ingress routes to.
+> - **DNS-01** - creates a TXT record via a DNS provider API; also supports wildcard certs, which HTTP-01 doesn't.
 
 How does this connect to an Ingress in practice?
 > Adding `cert-manager.io/cluster-issuer: <name>` as an annotation on an Ingress is usually enough - cert-manager watches for that annotation, requests the cert automatically, and stores it as a Secret the Ingress Controller then uses for TLS termination.
@@ -84,7 +85,10 @@ What problem does ExternalDNS solve?
 > Manually creating a DNS record every time you add an Ingress hostname or LoadBalancer Service is error-prone and easy to forget - ExternalDNS automates keeping DNS in sync with what's actually running in the cluster.
 
 How does ExternalDNS work?
-> It watches Ingress and Service objects for hostnames, then creates/updates/deletes matching records in a real DNS provider (Route53, Cloudflare, Google Cloud DNS, etc.) via that provider's API.
+> It watches Ingress and Service objects for hostnames, then creates/updates/deletes matching records in a real DNS provider via that provider's API, such as:
+> - Route53
+> - Cloudflare
+> - Google Cloud DNS
 
 How does it know which hostnames to manage?
 > From the `host` field on an Ingress, or an explicit `external-dns.alpha.kubernetes.io/hostname` annotation on a Service - it reconciles the DNS provider's records to match what it observes in the cluster.
@@ -100,7 +104,10 @@ Why would a single cluster's Ingress not be enough?
 > For availability across regions, or to keep traffic close to users globally, one cluster in one region becomes a single point of failure and adds latency for distant users.
 
 What is the general pattern for multi-cluster access?
-> A global load balancer (e.g. AWS Global Accelerator, Cloudflare, GCP's multi-cluster Ingress) sits in front of multiple regional clusters, routing users to the nearest or healthiest one, with each cluster running its own Ingress underneath.
+> A global load balancer sits in front of multiple regional clusters, routing users to the nearest or healthiest one, with each cluster running its own Ingress underneath. Examples include:
+> - AWS Global Accelerator
+> - Cloudflare
+> - GCP's multi-cluster Ingress
 
 What's the difference between this and just having replicas across AZs in one region?
 > AZ-level replicas protect against a single data center failure, but the whole region is still one geographic point of failure - multi-cluster/regional setups protect against a full region going down and reduce latency for geographically distant users.
@@ -129,10 +136,16 @@ Why is the Gateway API replacing Ingress?
 > Ingress's spec is intentionally minimal and vendor extensions live in annotations (non-portable, inconsistent across controllers). Gateway API is a newer, more expressive standard built to be portable across implementations without relying on custom annotations.
 
 What are the core Gateway API objects?
-> **GatewayClass** (like IngressClass - which controller implements it), **Gateway** (the actual listener - ports, hosts, TLS), and **HTTPRoute** (routing rules - similar to Ingress paths/hosts, but far more expressive).
+> - **GatewayClass** - like IngressClass, defines which controller implements it.
+> - **Gateway** - the actual listener: ports, hosts, TLS.
+> - **HTTPRoute** - routing rules, similar to Ingress paths/hosts, but far more expressive.
 
 What can Gateway API express that Ingress can't natively?
-> Traffic splitting/weighting between backends, header-based routing, request/response modification, and clean support for non-HTTP protocols (TCP, gRPC) - all as first-class spec fields instead of controller-specific annotations.
+> All as first-class spec fields instead of controller-specific annotations:
+> - Traffic splitting/weighting between backends
+> - Header-based routing
+> - Request/response modification
+> - Clean support for non-HTTP protocols (TCP, gRPC)
 
 Should you use Gateway API instead of Ingress today?
 > Ingress is still extremely widely used and well understood, but Gateway API is the direction the ecosystem is moving - worth learning conceptually, but Ingress remains the safer default until a project specifically needs what Gateway API offers.
