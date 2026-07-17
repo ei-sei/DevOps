@@ -8,7 +8,10 @@ What does the Kubernetes networking model fundamentally promise?
 > Every Pod gets its own IP, and every Pod can reach every other Pod directly, on any node, without NAT - see the [flat network model](03-exposing-applications-services.md#part-6-the-pod-networking-model) covered in the Services notes.
 
 What are the four networking problems Kubernetes has to solve?
-> Container-to-container communication (inside one Pod), Pod-to-Pod communication (across the cluster), Pod-to-Service communication (stable addressing), and external-to-Service communication (getting traffic in from outside).
+> - Container-to-container communication (inside one Pod), 
+> - Pod-to-Pod communication (across the cluster), 
+> - Pod-to-Service communication (stable addressing),  
+> - External-to-Service communication (getting traffic in from outside).
 
 ---
 
@@ -50,7 +53,9 @@ When does the CNI plugin get invoked?
 > By the kubelet, every time a Pod is created or removed on a node - the kubelet calls the CNI plugin to set up (or tear down) that Pod's networking before/after the Pod's containers run.
 
 What are common CNI plugin choices?
-> **Calico** (network policy enforcement, BGP routing), **Flannel** (simple overlay network, easy to set up), **Cilium** (eBPF-based, high performance, deep observability) - each implements the same Kubernetes networking contract differently.
+> - **Calico** (network policy enforcement, BGP routing), 
+> - **Flannel** (simple overlay network, easy to set up), 
+> - **Cilium** (eBPF-based, high performance, deep observability) - each implements the same Kubernetes networking contract differently.
 
 Does Kubernetes ship with a CNI plugin by default?
 > No - a cluster has no Pod networking at all until a CNI plugin is installed; this is why a fresh `kubeadm` cluster shows nodes as `NotReady` until one is applied.
