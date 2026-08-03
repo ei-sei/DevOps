@@ -5,7 +5,10 @@
 ## Part 1: The K8s API Security Chain
 
 What happens to every request that hits the Kubernetes API server?
-> It passes through three sequential stages before anything happens: **Authentication** (who are you), **Authorisation** (what are you allowed to do), and **Admission Control** (should this specific request be allowed/modified, even if authorised).
+> It passes through three sequential stages before anything happens: 
+> - **Authentication** (who are you), 
+> - **Authorisation** (what are you allowed to do), 
+> - **Admission Control** (should this specific request be allowed/modified, even if authorised).
 
 Why does the order matter?
 > Each stage can reject the request outright - an unauthenticated request never reaches authorisation, and an unauthorised request never reaches admission control. Only requests that pass all three actually get persisted to etcd.
