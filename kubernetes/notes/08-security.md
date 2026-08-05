@@ -164,6 +164,9 @@ Give examples of what admission control is used for.
 
 ## Part 10: Policy Engines - OPA Gatekeeper vs Kyverno
 
+How do policy engines relate to the admission controllers from Part 9?
+> They aren't a separate mechanism - they're policy engines packaged as ready-made webhook servers, registered as the same ValidatingAdmissionWebhook/MutatingAdmissionWebhook types. Installing Gatekeeper or Kyverno deploys a pod and a WebhookConfiguration that tells the apiserver to call it, so your custom policy runs through the exact same admission path built-in controllers use.
+
 What problem do policy engines solve that built-in admission control doesn't?
 > Built-in admission controllers are fixed, compiled-in behaviours - policy engines let you define **custom** validating/mutating rules declaratively, without writing and deploying your own webhook server from scratch.
 
