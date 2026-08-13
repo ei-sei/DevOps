@@ -38,7 +38,7 @@ What does `metrics-server` deliberately *not* do?
 > No history - it only holds the latest data point, nothing is stored for later querying. It's not a monitoring stack, just the minimum plumbing Kubernetes itself needs for autoscaling and `kubectl top`.
 
 Where does real historical monitoring fit in, then?
-> A separate stack (Prometheus, Grafana, etc.) scrapes and stores metrics over time for dashboards, alerting, and trend analysis - covered in depth on the `monitoring-stack` branch of this repo, not here.
+> A separate stack (Prometheus, Grafana, etc.) scrapes and stores metrics over time for dashboards, alerting, and trend analysis - covered in depth in [`monitoring-stack/`](../../monitoring-stack/) elsewhere in this repo, not here.
 
 ```bash
 kubectl top nodes
