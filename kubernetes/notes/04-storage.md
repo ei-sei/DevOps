@@ -84,15 +84,52 @@ How do StatefulSets solve this? *(see also [notes/02](02-running-and-managing-wo
 > Each Pod in a StatefulSet gets its own PVC generated from a `volumeClaimTemplate`, and that specific PVC/PV always follows the same Pod identity (`app-0` always gets `app-0`'s volume back), even after a restart or rescheduling.
 
 ```yaml
-volumeClaimTemplates:
-  - metadata:
-      name: data
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+spec:
+  clusterIP: None   # headless - required by StatefulSets for stable per-Pod DNS
+  selector:
+    app: app
+  ports:
+    - port: 5432
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: app
+spec:
+  serviceName: app-service   # must match the headless Service above
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
     spec:
-      accessModes: ["ReadWriteOnce"]
-      resources:
-        requests:
-          storage: 10Gi
+      containers:
+        - name: app
+          image: postgres:16
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
 ```
+
+> `volumeClaimTemplates` is what actually differs from a plain PVC (Part 3) - instead of one PVC you create and reference by name, Kubernetes stamps out a separate PVC per replica automatically (`data-app-0`, `data-app-1`), each permanently bound to that specific Pod identity. Note there's no standalone `PersistentVolumeClaim` object here and no `volumes:`/`claimName` on the Pod spec - the template replaces both.
+
+What is a headless Service, and why does a StatefulSet need one?
+> A Service with `clusterIP: None` - instead of load-balancing across Pods behind one virtual IP, it gives each Pod its own stable DNS name (`app-0.app-service`, `app-1.app-service`). `serviceName` on the StatefulSet is what wires this up; without it, individual Pods have no stable address to be reached at by name.
 
 ---
 
