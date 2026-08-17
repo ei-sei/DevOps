@@ -89,6 +89,7 @@ Every topic heading across all notes files, so you can jump straight to a specif
 | Project | Description | Stack |
 |---------|--------------|-------|
 | [Flask + Redis](projects/flask-redis/README.md) | Multi-container visit-counter app - Flask increments a count in Redis on every request, nginx in front as reverse proxy and load balancer. Covers Compose networking, volume persistence, env vars, and scaling. | Python, Flask, Redis, nginx, Docker Compose |
+| [Taskboard](projects/taskboard/README.md) | Node/Express todo API + static frontend, focused on a multi-stage build that strips the base image's own bundled npm/npx/corepack from the final image, not just the build stage's leftovers. | Node.js, Express, Docker |
 
 ---
 
@@ -111,12 +112,19 @@ docker/
 │   ├── 06-best-practices.md
 │   └── 07-dockerhub.md
 └── projects/
-    └── flask-redis/
+    ├── flask-redis/
+    │   ├── README.md
+    │   ├── docker-compose.yml
+    │   ├── nginx.conf
+    │   └── app/
+    │       ├── app.py
+    │       ├── Dockerfile
+    │       └── requirements.txt
+    └── taskboard/
         ├── README.md
-        ├── docker-compose.yml
-        ├── nginx.conf
         └── app/
-            ├── app.py
+            ├── server.js
+            ├── package.json
             ├── Dockerfile
-            └── requirements.txt
+            └── public/
 ```
