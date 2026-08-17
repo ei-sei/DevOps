@@ -1,14 +1,14 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: StatefulSet   # not Deployment - gives each pod stable identity + its own storage
 metadata:
   name: db
 spec:
-  serviceName: db-service
+  serviceName: db-service   # must match the headless Service defined below
   replicas: 1
   selector:
     matchLabels:
-      app: db
-  template:
+      app: db   # must match template.metadata.labels below - how the StatefulSet finds its own pods
+  template:               # the pod template - what each replica actually runs
     metadata:
       labels:
         app: db
@@ -16,14 +16,14 @@ spec:
       containers:
         - name: mongodb
           image: mongo:5.0
-          volumeMounts:
-            - name: db-storage
-              mountPath: /data/db
-  volumeClaimTemplates:
+          volumeMounts:                # mounts a volume into the container's filesystem
+            - name: db-storage         # must match the volumeClaimTemplate name below
+              mountPath: /data/db      # where MongoDB actually writes its data
+  volumeClaimTemplates:     # auto-generates one PVC per replica (db-storage-db-0, db-storage-db-1, ...)
     - metadata:
         name: db-storage
       spec:
-        accessModes: ["ReadWriteOnce"]
+        accessModes: ["ReadWriteOnce"]   # one node can mount it read-write
         resources:
           requests:
             storage: 1Gi
@@ -33,8 +33,8 @@ kind: Service
 metadata:
   name: db-service
 spec:
-  clusterIP: None
+  clusterIP: None   # headless - gives each pod its own DNS name instead of load-balancing across them
   selector:
-    app: db
+    app: db          # routes to any pod with this label - same as a normal Service
   ports:
     - port: 27017
