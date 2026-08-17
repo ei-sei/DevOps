@@ -193,7 +193,7 @@ Restart → docker-compose up -d
 Visit counter → Counter = 6 ✓ (persisted!)
 ```
 
-We will mount a named [volume](../notes/05-volumes.md) for storage and enable AOF (Append-Only File) so Redis writes changes to disk. The volume is managed by Docker and stored at `/var/lib/docker/volumes/redis-data/_data/`
+We will mount a named [volume](../../notes/05-volumes.md) for storage and enable AOF (Append-Only File) so Redis writes changes to disk. The volume is managed by Docker and stored at `/var/lib/docker/volumes/redis-data/_data/`
 
 To implement persistent storage, you will need to update `docker-compose.yml` with these changes:
 ```yaml
