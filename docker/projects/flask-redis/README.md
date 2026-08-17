@@ -241,7 +241,7 @@ docker compose up -d
 Verify volume was created:
 ```bash
 docker volume ls
-# Output: local     flask-redis-project_redis-data
+# Output: local     flask-redis_redis-data
 ```
 
 Refresh `/count` a few times to get the counter up, then bring the containers down and back up:

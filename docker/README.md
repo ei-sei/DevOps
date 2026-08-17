@@ -88,7 +88,7 @@ Every topic heading across all notes files, so you can jump straight to a specif
 
 | Project | Description | Stack |
 |---------|--------------|-------|
-| [Flask + Redis](projects/flask-redis-project/README.md) | Multi-container visit-counter app - Flask increments a count in Redis on every request, nginx in front as reverse proxy and load balancer. Covers Compose networking, volume persistence, env vars, and scaling. | Python, Flask, Redis, nginx, Docker Compose |
+| [Flask + Redis](projects/flask-redis/README.md) | Multi-container visit-counter app - Flask increments a count in Redis on every request, nginx in front as reverse proxy and load balancer. Covers Compose networking, volume persistence, env vars, and scaling. | Python, Flask, Redis, nginx, Docker Compose |
 
 ---
 
@@ -111,7 +111,7 @@ docker/
 │   ├── 06-best-practices.md
 │   └── 07-dockerhub.md
 └── projects/
-    └── flask-redis-project/
+    └── flask-redis/
         ├── README.md
         ├── docker-compose.yml
         ├── nginx.conf
