@@ -1,9 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-service
+spec:
+  clusterIP: None   # headless - gives each pod its own DNS name instead of load-balancing across them
+  selector:
+    app: db          # routes to any pod with this label - same as a normal Service
+  ports:
+    - port: 27017
+---
 apiVersion: apps/v1
 kind: StatefulSet   # not Deployment - gives each pod stable identity + its own storage
 metadata:
   name: db
 spec:
-  serviceName: db-service   # must match the headless Service defined below
+  serviceName: db-service   # must match the headless Service defined above
   replicas: 1
   selector:
     matchLabels:
@@ -27,14 +38,3 @@ spec:
         resources:
           requests:
             storage: 1Gi
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: db-service
-spec:
-  clusterIP: None   # headless - gives each pod its own DNS name instead of load-balancing across them
-  selector:
-    app: db          # routes to any pod with this label - same as a normal Service
-  ports:
-    - port: 27017
