@@ -28,7 +28,7 @@ This repository uses a monorepo layout - each topic lives in its own top-level f
 | [`aws`](aws/)                             | Cloud            | AWS fundamentals and labs covering VPC, ALB, S3, CloudFront, Route53, Lambda, API Gateway, DynamoDB, and IAM         |
 | [`terraform`](terraform/)                 | IaC              | Terraform fundamentals and labs, deploying AWS resources as code                                                     |
 | [`github-actions`](github-actions/)       | CI/CD            | GitHub Actions workflows covering CI/CD pipelines, Docker image builds, testing, linting, and automated deployments |
-| [`agentic-workflows`](agentic-workflows/) | AI               | (In progress) Notes and projects on building, optimising, and automating AI agents within DevOps workflows          |
+| [`agentic-workflows`](agentic-workflows/) | AI               | AI/agentic engineering learning track: 14-topic curriculum, framework studies, project roadmap, and a CLI learning agent |
 | [`monitoring-stack`](monitoring-stack/)   | Observability    | (In progress) Setting up observability with Prometheus, Grafana, and alerting configurations                        |
 | [`kubernetes`](kubernetes/)               | Containerisation | (In progress) Local Kubernetes setup and learning exercises using minikube and kind                                 |
 
