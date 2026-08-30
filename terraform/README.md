@@ -7,6 +7,7 @@ Provisioning and managing AWS infrastructure using Terraform. Covers core concep
 - [notes/](notes/) - Core concepts, variables, modules, data sources
 - [tutorial/](tutorial/) - Step-by-step Terraform tutorial
 - [lab/](lab/) - Hands-on labs deploying real AWS infrastructure
+- [examples/](examples/) - Reference examples, one concept each - code shown for reading, not applied
 
 ## Labs
 
@@ -23,6 +24,12 @@ Deploy a WordPress stack on AWS - custom VPC, EC2, security groups, user data. R
 EC2 deployment using cloud-init for automated instance configuration with NGINX.
 
 ![architecture](assets/lab02/architecture.png)
+
+## Examples
+
+| Example | Description |
+|---------|--------------|
+| [eks-irsa-role](examples/eks-irsa-role.md) | IAM role a Kubernetes ServiceAccount can assume directly via OIDC federation (IRSA) - scoped to one namespace + ServiceAccount, reusable for cluster-autoscaler, the AWS Load Balancer Controller, EBS CSI driver, etc. |
 
 ## Topics Covered
 
